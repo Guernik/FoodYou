@@ -1,3 +1,9 @@
+# Resolve the Android SDK location from local.properties (falling back to
+# $ANDROID_HOME), then expose zipalign/apksigner from the latest build-tools.
+export ANDROID_HOME := env_var_or_default('ANDROID_HOME', `sed -n 's/^sdk.dir=//p' local.properties`)
+build_tools := ANDROID_HOME / 'build-tools' / shell('ls "$1/build-tools" 2>/dev/null | sort -V | tail -1', ANDROID_HOME)
+export PATH := build_tools + ':' + env_var('PATH')
+
 default:
     @just --list
 
