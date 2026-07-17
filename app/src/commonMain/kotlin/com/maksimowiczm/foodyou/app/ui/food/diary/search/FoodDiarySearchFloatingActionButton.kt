@@ -2,6 +2,7 @@ package com.maksimowiczm.foodyou.app.ui.food.diary.search
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.LunchDining
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
@@ -23,6 +24,7 @@ internal fun FoodDiarySearchFloatingActionButton(
     onFabExpandedChange: (Boolean) -> Unit,
     onCreateRecipe: () -> Unit,
     onCreateProduct: () -> Unit,
+    onAiLog: () -> Unit,
     modifier: Modifier = Modifier.Companion,
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -82,6 +84,15 @@ internal fun FoodDiarySearchFloatingActionButton(
             },
             icon = { Icon(Icons.Filled.LunchDining, null) },
             text = { Text(stringResource(Res.string.headline_product)) },
+        )
+        FloatingActionButtonMenuItem(
+            modifier = Modifier,
+            onClick = {
+                onAiLog()
+                onFabExpandedChange(false)
+            },
+            icon = { Icon(Icons.Filled.AutoAwesome, null) },
+            text = { Text(stringResource(Res.string.headline_ai_food_logging)) },
         )
     }
 }

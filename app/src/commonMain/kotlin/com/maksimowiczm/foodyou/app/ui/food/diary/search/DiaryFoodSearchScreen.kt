@@ -63,6 +63,7 @@ fun DiaryFoodSearchScreen(
     onBack: () -> Unit,
     onCreateRecipe: () -> Unit,
     onCreateProduct: () -> Unit,
+    onAiLog: () -> Unit,
     onMeasure: (FoodId, Measurement) -> Unit,
     onUpdateUsdaApiKey: () -> Unit,
     onUpdateOpenFoodFactsCredentials: () -> Unit,
@@ -144,6 +145,7 @@ fun DiaryFoodSearchScreen(
             onFabExpandedChange = { fabExpanded = it },
             onCreateRecipe = onCreateRecipe,
             onCreateProduct = onCreateProduct,
+            onAiLog = onAiLog,
             modifier =
                 Modifier.zIndex(100f)
                     .align(Alignment.BottomEnd)
