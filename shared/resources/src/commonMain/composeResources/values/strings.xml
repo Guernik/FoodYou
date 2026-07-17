@@ -531,4 +531,27 @@
     <string name="description_privacy_policy">See how your data is handled</string>
 
     <string name="error_open_food_facts_timeout">Open Food Facts is taking too long to respond. The service may be temporarily slow or unavailable. Try scanning the product barcode instead.</string>
+
+    <!-- AI food logging -->
+    <string name="headline_ai" translatable="false">AI</string>
+    <string name="headline_ai_food_logging">AI food logging</string>
+    <string name="description_ai_food_logging">Describe your meal in plain language and let AI estimate the nutrition. The text you enter is sent to the AI endpoint you configure.</string>
+    <string name="action_analyze">Analyze</string>
+    <string name="action_log_items">Log %1$d items</string>
+    <string name="hint_ai_meal_description">e.g. two poached eggs and a piece of white toast</string>
+    <string name="headline_ai_base_url">Base URL</string>
+    <string name="headline_ai_model">Model</string>
+    <string name="headline_ai_api_key">API key</string>
+    <string name="description_ai_settings">Configure an OpenAI-compatible endpoint. Works with OpenAI, local runners (Ollama, LM Studio) and gateways such as OpenRouter.</string>
+    <string name="description_ai_no_items">No food items were recognized. Try rephrasing your description.</string>
+    <string name="description_ai_missing_api_key">Add an AI API key to use natural language food logging.</string>
+    <string name="action_add_api_key">Add API key</string>
+    <string name="neutral_ai_items_logged">Items logged</string>
+    <string name="error_ai_missing_api_key">No API key configured. Add one in AI settings.</string>
+    <string name="error_ai_network">Could not reach the AI endpoint. Check your connection and base URL.</string>
+    <string name="error_ai_rate_limited">The AI endpoint rate limit was exceeded. Try again later.</string>
+    <string name="error_ai_unauthorized">The AI API key was rejected. Check your key.</string>
+    <string name="error_ai_malformed_response">The AI returned an unexpected response. Try again or rephrase.</string>
+    <string name="error_ai_refused">The AI could not process this description. Try rephrasing.</string>
+    <string name="error_ai_unknown">Something went wrong while contacting the AI endpoint.</string>
 </resources>

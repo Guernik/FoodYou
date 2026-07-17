@@ -776,7 +776,9 @@ private fun SourcePicker(
     val dropdownMenu =
         @Composable {
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                FoodSource.Type.entries.forEach {
+                // Ai is a system-assigned source (AI food logging); it must not be selectable
+                // as the origin of a manually-created product.
+                FoodSource.Type.entries.filter { it != FoodSource.Type.Ai }.forEach {
                     DropdownMenuItem(
                         leadingIcon = { it.Icon() },
                         text = { Text(it.stringResource()) },

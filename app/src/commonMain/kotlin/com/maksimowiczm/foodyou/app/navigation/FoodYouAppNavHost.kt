@@ -10,10 +10,12 @@ import com.maksimowiczm.foodyou.app.ui.about.AboutScreen
 import com.maksimowiczm.foodyou.app.ui.database.exportcsvproducts.ExportCsvProductsScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.ExternalDatabasesScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.OpenFoodFactsLoginDialog
+import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.UpdateLlmSettingsDialog
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.UpdateUsdaApiKeyDialog
 import com.maksimowiczm.foodyou.app.ui.database.importcsvproducts.ImportCsvProductsScreen
 import com.maksimowiczm.foodyou.app.ui.database.master.DatabaseSettingsScreen
 import com.maksimowiczm.foodyou.app.ui.database.swissfoodcompositiondatabase.SwissFoodCompositionDatabaseScreen
+import com.maksimowiczm.foodyou.app.ui.food.ai.AiFoodLoggingScreen
 import com.maksimowiczm.foodyou.app.ui.food.diary.add.AddEntryScreen
 import com.maksimowiczm.foodyou.app.ui.food.diary.quickadd.CreateQuickAddScreen
 import com.maksimowiczm.foodyou.app.ui.food.diary.quickadd.UpdateQuickAddScreen
@@ -197,6 +199,7 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
                 onCreateProduct = {
                     navController.navigateSingleTop(FoodDiaryCreateProduct(date, mealId))
                 },
+                onAiLog = { navController.navigateSingleTop(FoodDiaryAiLog(date, mealId)) },
                 onMeasure = { foodId, measurement ->
                     navController.navigate(
                         FoodDiaryCreateEntry(
@@ -214,6 +217,23 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
                 date = LocalDate.fromEpochDays(date),
                 mealId = mealId,
                 animatedVisibilityScope = this,
+            )
+        }
+        forwardBackwardComposable<FoodDiaryAiLog> {
+            val (date, mealId) = it.toRoute<FoodDiaryAiLog>()
+
+            AiFoodLoggingScreen(
+                onBack = { navController.popBackStackInclusive<FoodDiaryAiLog>() },
+                onLogged = { navController.popBackStackInclusive<FoodDiaryAiLog>() },
+                onConfigure = { navController.navigateSingleTop(LlmSettings) },
+                date = LocalDate.fromEpochDays(date),
+                mealId = mealId,
+            )
+        }
+        dialog<LlmSettings> {
+            UpdateLlmSettingsDialog(
+                onDismissRequest = { navController.popBackStackInclusive<LlmSettings>() },
+                onSave = { navController.popBackStackInclusive<LlmSettings>() },
             )
         }
         forwardBackwardComposable<UpdateRecipe> {
@@ -421,6 +441,10 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
 @Serializable private data class FoodDiarySearch(val date: Long, val mealId: Long)
 
 @Serializable private data class FoodDiaryCreateProduct(val date: Long, val mealId: Long)
+
+@Serializable private data class FoodDiaryAiLog(val date: Long, val mealId: Long)
+
+@Serializable private object LlmSettings
 
 @Serializable private data class FoodDiaryCreateRecipe(val date: Long, val mealId: Long)
 
