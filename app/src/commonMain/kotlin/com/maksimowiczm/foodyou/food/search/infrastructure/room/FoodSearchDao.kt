@@ -30,7 +30,7 @@ interface FoodSearchDao {
         WITH ProductsSearch AS (
             SELECT $PRODUCT_FOOD_SEARCH_SQL_SELECT
             FROM Product p
-            WHERE :source IS NULL OR p.sourceType = :source
+            WHERE $PRODUCT_SOURCE_FILTER
         ),
         RecipesSearch AS (
             SELECT $RECIPE_FOOD_SEARCH_SQL_SELECT
@@ -42,7 +42,7 @@ interface FoodSearchDao {
                 (:excludedRecipeId IS NULL OR NOT EXISTS (
                     SELECT 1
                     FROM RecipeAllIngredientsView rai
-                    WHERE rai.targetRecipeId = r.id 
+                    WHERE rai.targetRecipeId = r.id
                     AND rai.ingredientId = :excludedRecipeId
                 ))
         )
@@ -61,7 +61,7 @@ interface FoodSearchDao {
         WITH ProductsSearch AS (
             SELECT 1
             FROM Product p JOIN ProductFts fts ON p.id = fts.rowid
-            WHERE :source IS NULL OR p.sourceType = :source
+            WHERE $PRODUCT_SOURCE_FILTER
         ),
         RecipesSearch AS (
             SELECT 1
@@ -88,7 +88,7 @@ interface FoodSearchDao {
             SELECT $PRODUCT_FOOD_SEARCH_SQL_SELECT
             FROM Product p JOIN ProductFts fts ON p.id = fts.rowid
             WHERE
-                (ProductFts MATCH :query || '*') AND (:source IS NULL OR p.sourceType = :source)
+                (ProductFts MATCH :query || '*') AND ($PRODUCT_SOURCE_FILTER)
         ),
         RecipesSearch AS (
             SELECT $RECIPE_FOOD_SEARCH_SQL_SELECT
@@ -125,7 +125,7 @@ interface FoodSearchDao {
             SELECT 1
             FROM Product p JOIN ProductFts fts ON p.id = fts.rowid
             WHERE
-                (ProductFts MATCH :query || '*') AND (:source IS NULL OR p.sourceType = :source)
+                (ProductFts MATCH :query || '*') AND ($PRODUCT_SOURCE_FILTER)
         ),
         RecipesSearch AS (
             SELECT 1
@@ -157,7 +157,7 @@ interface FoodSearchDao {
         FROM Product p
         WHERE
             p.barcode LIKE '%' || :barcode || '%' AND
-            (:source IS NULL OR p.sourceType = :source)
+            ($PRODUCT_SOURCE_FILTER)
         ORDER BY headline COLLATE NOCASE ASC
         """
     )
@@ -172,7 +172,7 @@ interface FoodSearchDao {
         FROM Product p
         WHERE
             p.barcode LIKE '%' || :barcode || '%' AND
-            (:source IS NULL OR p.sourceType = :source)
+            ($PRODUCT_SOURCE_FILTER)
         """
     )
     fun observeFoodCountByBarcode(barcode: String, source: FoodSourceType?): Flow<Int>
@@ -358,6 +358,15 @@ interface FoodSearchDao {
     )
     fun observeRecentFoodCountByBarcode(barcode: String, nowEpochSeconds: Long): Flow<Int>
 }
+
+// Product source filter for the "Your food" / source tabs. Matches the requested source, and
+// additionally surfaces AI products under the User source so they appear in "Your food".
+private const val PRODUCT_SOURCE_FILTER =
+    """
+:source IS NULL
+    OR p.sourceType = :source
+    OR (:source = ${FoodSourceTypeSQLConstants.USER} AND p.sourceType = ${FoodSourceTypeSQLConstants.AI})
+"""
 
 // Don't do it twice
 private const val PRODUCT_FOOD_SEARCH_SQL_SELECT =

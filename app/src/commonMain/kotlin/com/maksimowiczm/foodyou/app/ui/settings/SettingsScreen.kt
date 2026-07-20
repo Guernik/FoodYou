@@ -36,6 +36,7 @@ fun SettingsScreen(
     onGoals: () -> Unit,
     onPersonalization: () -> Unit,
     onDatabase: () -> Unit,
+    onAi: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -103,6 +104,15 @@ fun SettingsScreen(
             item {
                 DatabaseSettingsListItem(
                     onClick = onDatabase,
+                    shape = shape,
+                    color = color,
+                    contentColor = contentColor,
+                )
+            }
+
+            item {
+                AiSettingsListItem(
+                    onClick = onAi,
                     shape = shape,
                     color = color,
                     contentColor = contentColor,

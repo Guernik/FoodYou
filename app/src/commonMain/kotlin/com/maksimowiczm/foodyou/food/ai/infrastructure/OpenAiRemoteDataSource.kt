@@ -3,6 +3,7 @@ package com.maksimowiczm.foodyou.food.ai.infrastructure
 import com.maksimowiczm.foodyou.common.log.Logger
 import com.maksimowiczm.foodyou.food.ai.infrastructure.model.ChatCompletionRequest
 import com.maksimowiczm.foodyou.food.ai.infrastructure.model.ChatCompletionResponse
+import com.maksimowiczm.foodyou.food.ai.infrastructure.model.ChatCompletionTestRequest
 import com.maksimowiczm.foodyou.food.ai.infrastructure.model.ChatMessage
 import com.maksimowiczm.foodyou.food.ai.infrastructure.model.ErrorResponse
 import com.maksimowiczm.foodyou.food.ai.infrastructure.model.JsonSchemaWrapper
@@ -65,6 +66,60 @@ internal class OpenAiRemoteDataSource(private val client: HttpClient, private va
         } catch (e: Exception) {
             currentCoroutineContext().ensureActive()
             handleException(e)
+        }
+    }
+
+    /**
+     * Lightweight connectivity/auth check. Sends a minimal chat request (no structured output) so it
+     * is cheap and does not depend on the model supporting json_schema. Success = HTTP 200 with a
+     * well-formed chat response.
+     */
+    suspend fun testConnection(baseUrl: String, model: String, apiKey: String): Result<Unit> {
+        return try {
+            val url = "${baseUrl.trimEnd('/')}/chat/completions"
+
+            val request =
+                ChatCompletionTestRequest(
+                    model = model,
+                    messages = listOf(ChatMessage(role = "user", content = "ping")),
+                    maxCompletionTokens = 1,
+                )
+
+            val response =
+                client.post(url) {
+                    contentType(ContentType.Application.Json)
+                    headers { append(HttpHeaders.Authorization, "Bearer $apiKey") }
+                    setBody(request)
+                }
+
+            when (response.status) {
+                HttpStatusCode.OK -> {
+                    // Ensure the body is a well-formed chat response, not an error page with a 200.
+                    response.body<ChatCompletionResponse>()
+                    Result.success(Unit)
+                }
+
+                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden -> Result.failure(AiRemoteException.Unauthorized())
+
+                HttpStatusCode.TooManyRequests ->
+                    Result.failure(AiRemoteException.RateLimited())
+
+                else -> {
+                    val message = response.errorMessage()
+                    logger.e(TAG) { "AI test failed ${response.status}: $message" }
+                    Result.failure(AiRemoteException.Unknown("${response.status}: $message"))
+                }
+            }
+        } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
+            when (e) {
+                is AiRemoteException -> Result.failure(e)
+                else -> {
+                    logger.e(TAG, e) { "AI test request failed" }
+                    Result.failure(AiRemoteException.Network(e.message))
+                }
+            }
         }
     }
 

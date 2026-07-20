@@ -554,4 +554,27 @@
     <string name="error_ai_malformed_response">The AI returned an unexpected response. Try again or rephrase.</string>
     <string name="error_ai_refused">The AI could not process this description. Try rephrasing.</string>
     <string name="error_ai_unknown">Something went wrong while contacting the AI endpoint.</string>
+    <string name="headline_ai_settings">AI</string>
+    <string name="description_ai_settings_short">Configure the AI endpoint for natural language food logging</string>
+    <string name="headline_ai_vendor">Provider</string>
+    <string name="headline_ai_vendor_openai" translatable="false">OpenAI</string>
+    <string name="headline_ai_vendor_openrouter" translatable="false">OpenRouter</string>
+    <string name="headline_ai_vendor_custom">Custom</string>
+    <string name="action_enter_model_manually">Enter model manually</string>
+    <string name="description_ai_api_key_stored">A key is already saved. Leave blank to keep it, or enter a new one to replace it.</string>
+    <string name="action_clear_key">Clear key</string>
+    <string name="action_test_connection">Test connection</string>
+    <string name="neutral_ai_test_ok">Connection OK</string>
+    <string name="action_save_as_product">Save as product</string>
+    <string name="neutral_ai_saved">Saved</string>
+    <string name="action_save_as_recipe">Save all as recipe</string>
+    <string name="action_save_recipe_and_log">Save as recipe and log</string>
+    <string name="action_more">More</string>
+    <string name="headline_ai_save_recipe">Save as recipe</string>
+    <string name="action_edit_nutrition">Nutrition</string>
+    <string name="description_ai_nutrition_per_100">Values per 100 g / 100 ml</string>
+    <string name="neutral_ai_product_saved">Product saved</string>
+    <string name="error_ai_product_save_failed">Could not save product</string>
+    <string name="neutral_ai_recipe_saved">Recipe saved</string>
+    <string name="error_ai_recipe_save_failed">Could not save recipe</string>
 </resources>
