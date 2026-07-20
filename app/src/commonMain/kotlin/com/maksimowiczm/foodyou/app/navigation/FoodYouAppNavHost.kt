@@ -10,7 +10,7 @@ import com.maksimowiczm.foodyou.app.ui.about.AboutScreen
 import com.maksimowiczm.foodyou.app.ui.database.exportcsvproducts.ExportCsvProductsScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.ExternalDatabasesScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.OpenFoodFactsLoginDialog
-import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.UpdateLlmSettingsDialog
+import com.maksimowiczm.foodyou.app.ui.settings.ai.AiSettingsScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.UpdateUsdaApiKeyDialog
 import com.maksimowiczm.foodyou.app.ui.database.importcsvproducts.ImportCsvProductsScreen
 import com.maksimowiczm.foodyou.app.ui.database.master.DatabaseSettingsScreen
@@ -94,6 +94,7 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
                 onGoals = { navController.navigateSingleTop(GoalsSetup) },
                 onPersonalization = { navController.navigateSingleTop(Personalization) },
                 onDatabase = { navController.navigateSingleTop(DatabaseSettings) },
+                onAi = { navController.navigateSingleTop(AiSettings) },
             )
         }
         forwardBackwardComposable<Language> {
@@ -225,16 +226,13 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
             AiFoodLoggingScreen(
                 onBack = { navController.popBackStackInclusive<FoodDiaryAiLog>() },
                 onLogged = { navController.popBackStackInclusive<FoodDiaryAiLog>() },
-                onConfigure = { navController.navigateSingleTop(LlmSettings) },
+                onConfigure = { navController.navigateSingleTop(AiSettings) },
                 date = LocalDate.fromEpochDays(date),
                 mealId = mealId,
             )
         }
-        dialog<LlmSettings> {
-            UpdateLlmSettingsDialog(
-                onDismissRequest = { navController.popBackStackInclusive<LlmSettings>() },
-                onSave = { navController.popBackStackInclusive<LlmSettings>() },
-            )
+        forwardBackwardComposable<AiSettings> {
+            AiSettingsScreen(onBack = { navController.popBackStackInclusive<AiSettings>() })
         }
         forwardBackwardComposable<UpdateRecipe> {
             val (recipeId) = it.toRoute<UpdateRecipe>()
@@ -444,7 +442,7 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
 
 @Serializable private data class FoodDiaryAiLog(val date: Long, val mealId: Long)
 
-@Serializable private object LlmSettings
+@Serializable private object AiSettings
 
 @Serializable private data class FoodDiaryCreateRecipe(val date: Long, val mealId: Long)
 

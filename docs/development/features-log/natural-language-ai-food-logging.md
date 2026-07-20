@@ -148,7 +148,7 @@ New files, grouped by layer.
 | `AiFoodLoggingViewModel.kt` | Drives parse → review → confirm; holds mealId/date; emits the "logged" event. |
 | `AiFoodLoggingScreen.kt` | The screen: input, loading, editable review list, error/empty states. |
 | `AiFoodLoggingModule.kt` | Koin registration for the ViewModel. |
-| `UpdateLlmSettingsDialog.kt` | Settings dialog (baseUrl + model + API key). |
+| `UpdateLlmSettingsDialog.kt` | Settings dialog (baseUrl + model + API key). **Removed by the UX-improvements pass** — superseded by the full AI settings screen (see below). |
 
 ### Test — `app/src/commonTest/`
 
@@ -169,5 +169,52 @@ New files, grouped by layer.
 | `app/ui/food/diary/search/FoodDiarySearchFloatingActionButton.kt` | Third FAB menu item ("AI food logging"). |
 | `app/ui/food/component/FoodSource.kt` | Added `Ai` icon + label cases. |
 | `app/ui/food/product/ProductForm.kt` | Filtered `Ai` out of the manual source picker. |
-| `app/navigation/FoodYouAppNavHost.kt` | `FoodDiaryAiLog` + `LlmSettings` routes and their composable/dialog blocks. |
+| `app/navigation/FoodYouAppNavHost.kt` | `FoodDiaryAiLog` + `LlmSettings` routes and their composable/dialog blocks. (The `LlmSettings` dialog route was later replaced by the `AiSettings` screen route — see the UX-improvements map below.) |
 | `shared/resources/.../values/strings.xml` | AI feature strings (headline, actions, errors). |
+
+---
+
+## UX improvements pass (2026-07-17)
+
+Follow-up UX work. Request transcript + implementation notes:
+[`UX_Improvements.md`](./UX_Improvements.md); plan:
+[`../claude-plans/ai-food-logging-ux-improvements.md`](../claude-plans/ai-food-logging-ux-improvements.md).
+
+### New files
+
+| File | Purpose |
+|---|---|
+| `food/ai/domain/LlmVendor.kt` | Vendor presets (OpenAI / OpenRouter / Custom) with curated model lists; `fromBaseUrl()`. UI-only, not persisted. |
+| `food/ai/domain/LlmConnectionTester.kt` | Interface + `TestConnectionResult` for the settings TEST check (impl in infra). |
+| `food/ai/domain/TestLlmConnectionUseCase.kt` | Tests the *pending* baseUrl/model/apiKey before saving. |
+| `food/ai/domain/SaveMealItemAsProductUseCase.kt` | Persists one reviewed item as a reusable `FoodSource.Type.Ai` product (reuses `CreateProductUseCase`). |
+| `food/ai/domain/SaveMealItemsAsRecipeUseCase.kt` | Saves items as products, then composes a recipe (`CreateRecipeUseCase`, `Measurement.Gram` ingredients). |
+| `food/ai/infrastructure/OpenAiConnectionTester.kt` | Implements `LlmConnectionTester` over `OpenAiRemoteDataSource.testConnection`. |
+| `app/ui/settings/ai/AiSettingsScreen.kt` | Full AI settings screen: vendor/model dropdowns, base URL, masked API key, TEST button, Save. |
+| `app/ui/settings/ai/AiSettingsViewModel.kt` | Drives the settings screen; test/save/clear-key. |
+| `app/ui/settings/ai/AiSettingsUiState.kt` | Settings UI state + `TestState`. |
+| `app/ui/settings/ai/AiSettingsModule.kt` | Koin registration for `AiSettingsViewModel` (`aiSettings()`). |
+| `app/ui/settings/AiSettingsListItem.kt` | Settings-list row that opens the AI settings screen. |
+| `app/src/commonTest/.../app/ui/food/ai/EditableMealItemTest.kt` | Locks `EditableMealItem.toMealItem()` macro round-trip (per-100g, null→Incomplete). |
+
+### Modified files
+
+| File | Change |
+|---|---|
+| `food/ai/infrastructure/OpenAiRemoteDataSource.kt` | Added `testConnection()` (minimal chat request, no structured output). |
+| `food/ai/infrastructure/model/ChatCompletion.kt` | Added `ChatCompletionTestRequest` DTO. |
+| `food/ai/domain/AiDomainModule.kt` | Registers `TestLlmConnectionUseCase`, `SaveMealItemAsProductUseCase`, `SaveMealItemsAsRecipeUseCase`. |
+| `food/ai/infrastructure/AiModule.kt` | Binds `OpenAiConnectionTester` → `LlmConnectionTester`. |
+| `app/ui/food/ai/AiFoodLoggingUiState.kt` | `EditableMealItem` gains `EditableNutrition` (8 editable macros), `expanded`, `savedProductId`. |
+| `app/ui/food/ai/AiFoodLoggingViewModel.kt` | `toggleExpanded`, `saveAsProduct`, `saveAsRecipe`, snackbar `events` channel; injects the two save use cases. |
+| `app/ui/food/ai/AiFoodLoggingScreen.kt` | Collapsible macro editor, "Save as product", "Save all as recipe" (name dialog). |
+| `app/ui/settings/SettingsScreen.kt` | Added `onAi` + the AI settings list row. |
+| `app/ui/UiModule.kt` | Wires `aiSettings()`. |
+| `app/navigation/FoodYouAppNavHost.kt` | Replaced the `LlmSettings` dialog route with an `AiSettings` screen route; `onConfigure` and the Settings screen route to it. |
+| `shared/resources/.../values/strings.xml` | Settings-section, vendor, TEST, save-as-product/recipe, and per-macro-label strings. |
+
+### Removed files
+
+| File | Reason |
+|---|---|
+| `app/ui/database/externaldatabases/UpdateLlmSettingsDialog.kt` | Superseded by `app/ui/settings/ai/AiSettingsScreen.kt`. |

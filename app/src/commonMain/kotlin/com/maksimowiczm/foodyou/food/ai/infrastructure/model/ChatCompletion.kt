@@ -14,6 +14,14 @@ internal data class ChatCompletionRequest(
 
 @Serializable internal data class ChatMessage(val role: String, val content: String)
 
+/** Minimal request used by the settings "test connection" check — no structured output. */
+@Serializable
+internal data class ChatCompletionTestRequest(
+    val model: String,
+    val messages: List<ChatMessage>,
+    @SerialName("max_completion_tokens") val maxCompletionTokens: Int,
+)
+
 @Serializable
 internal data class ResponseFormat(
     val type: String = "json_schema",

@@ -3,6 +3,7 @@ package com.maksimowiczm.foodyou.food.ai.infrastructure
 import com.maksimowiczm.foodyou.common.infrastructure.koin.userPreferencesRepository
 import com.maksimowiczm.foodyou.common.infrastructure.koin.userPreferencesRepositoryOf
 import com.maksimowiczm.foodyou.food.ai.domain.LlmApiKeyRepository
+import com.maksimowiczm.foodyou.food.ai.domain.LlmConnectionTester
 import com.maksimowiczm.foodyou.food.ai.domain.MealDescriptionParser
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
@@ -45,6 +46,8 @@ internal fun Module.aiModule() {
         .bind<MealDescriptionParser>()
 
     factoryOf(::EncryptedLlmApiKeyRepository).bind<LlmApiKeyRepository>()
+
+    factoryOf(::OpenAiConnectionTester).bind<LlmConnectionTester>()
 
     userPreferencesRepositoryOf(::DataStoreLlmSettingsRepository)
 }
