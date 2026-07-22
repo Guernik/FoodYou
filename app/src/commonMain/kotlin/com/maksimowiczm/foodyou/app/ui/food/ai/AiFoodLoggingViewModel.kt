@@ -6,10 +6,12 @@ import com.maksimowiczm.foodyou.common.domain.food.NutritionFacts
 import com.maksimowiczm.foodyou.common.result.fold
 import com.maksimowiczm.foodyou.food.ai.domain.LlmApiKeyRepository
 import com.maksimowiczm.foodyou.food.ai.domain.LogMealItemsUseCase
+import com.maksimowiczm.foodyou.food.ai.domain.LogRecipeUseCase
 import com.maksimowiczm.foodyou.food.ai.domain.MealItem
 import com.maksimowiczm.foodyou.food.ai.domain.ParseMealDescriptionUseCase
 import com.maksimowiczm.foodyou.food.ai.domain.SaveMealItemAsProductUseCase
 import com.maksimowiczm.foodyou.food.ai.domain.SaveMealItemsAsRecipeUseCase
+import com.maksimowiczm.foodyou.food.domain.entity.FoodId
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +34,7 @@ internal class AiFoodLoggingViewModel(
     private val epochDay: Long,
     private val parseMealDescriptionUseCase: ParseMealDescriptionUseCase,
     private val logMealItemsUseCase: LogMealItemsUseCase,
+    private val logRecipeUseCase: LogRecipeUseCase,
     private val saveMealItemAsProductUseCase: SaveMealItemAsProductUseCase,
     private val saveMealItemsAsRecipeUseCase: SaveMealItemsAsRecipeUseCase,
     private val apiKeyRepository: LlmApiKeyRepository,
@@ -107,31 +110,30 @@ internal class AiFoodLoggingViewModel(
         val items = currentItems() ?: return
 
         viewModelScope.launch {
-            val ok = saveRecipe(name, items)
-            if (ok) eventChannel.send(AiFoodLoggingEvent.RecipeSaved)
+            val recipeId = saveRecipe(name, items)
+            if (recipeId != null) eventChannel.send(AiFoodLoggingEvent.RecipeSaved)
         }
     }
 
-    /** Save the parsed items as a recipe and log them into the diary. */
+    /** Save the parsed items as a recipe and log the recipe itself as a single diary entry. */
     fun saveAsRecipeAndLog(name: String) {
         val items = currentItems() ?: return
 
         viewModelScope.launch {
-            val saved = saveRecipe(name, items)
-            if (!saved) return@launch
+            val recipeId = saveRecipe(name, items) ?: return@launch
             eventChannel.send(AiFoodLoggingEvent.RecipeSaved)
-            logItems(items)
+            logRecipe(recipeId)
         }
     }
 
-    private suspend fun saveRecipe(name: String, items: List<MealItem>): Boolean =
+    private suspend fun saveRecipe(name: String, items: List<MealItem>): FoodId.Recipe? =
         saveMealItemsAsRecipeUseCase
             .save(name = name, items = items)
             .fold(
-                onSuccess = { true },
+                onSuccess = { it },
                 onError = {
                     eventChannel.send(AiFoodLoggingEvent.RecipeSaveFailed)
-                    false
+                    null
                 },
             )
 
@@ -154,6 +156,19 @@ internal class AiFoodLoggingViewModel(
                 onSuccess = { loggedChannel.send(Unit) },
                 onError = {
                     // Even a partial failure logged some items; surface completion and return.
+                    loggedChannel.send(Unit)
+                },
+            )
+    }
+
+    private suspend fun logRecipe(recipeId: FoodId.Recipe) {
+        _uiState.value = AiFoodLoggingUiState.Logging
+        logRecipeUseCase
+            .log(recipeId = recipeId, mealId = mealId, date = LocalDate.fromEpochDays(epochDay))
+            .fold(
+                onSuccess = { loggedChannel.send(Unit) },
+                onError = {
+                    // The recipe was already saved; surface completion so the UI can dismiss.
                     loggedChannel.send(Unit)
                 },
             )
