@@ -63,14 +63,20 @@ internal class AiFoodLoggingViewModel(
         }
     }
 
-    fun parse(description: String) {
+    fun parse(description: String, singleProduct: Boolean) {
         lastDescription = description.trim()
         viewModelScope.launch {
             _uiState.value = AiFoodLoggingUiState.Loading
             parseMealDescriptionUseCase
-                .parse(description)
+                .parse(description, singleProduct)
                 .fold(
-                    onSuccess = { items -> _uiState.value = AiFoodLoggingUiState.Review(items.toEditable()) },
+                    onSuccess = { items ->
+                        _uiState.value =
+                            AiFoodLoggingUiState.Review(
+                                items = items.toEditable(),
+                                isSingleProduct = singleProduct,
+                            )
+                    },
                     onError = { error -> _uiState.value = AiFoodLoggingUiState.Error(error) },
                 )
         }
