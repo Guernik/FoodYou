@@ -1,6 +1,7 @@
 package com.maksimowiczm.foodyou.app.ui.food.ai
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -32,13 +35,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -123,6 +131,7 @@ fun AiFoodLoggingScreen(
                     } else {
                         ReviewContent(
                             items = uiState.items,
+                            isSingleProduct = uiState.isSingleProduct,
                             suggestedRecipeName = viewModel.lastDescription,
                             onEdit = viewModel::editItem,
                             onRemove = viewModel::removeItem,
@@ -148,11 +157,12 @@ fun AiFoodLoggingScreen(
 @Composable
 private fun InputContent(
     hasApiKey: Boolean,
-    onAnalyze: (String) -> Unit,
+    onAnalyze: (String, Boolean) -> Unit,
     onConfigure: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val textState = rememberTextFieldState()
+    var singleProduct by remember { mutableStateOf(true) }
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
@@ -170,6 +180,11 @@ private fun InputContent(
             lineLimits = TextFieldLineLimits.MultiLine(3, 8),
         )
 
+        SingleProductToggle(
+            checked = singleProduct,
+            onCheckedChange = { singleProduct = it },
+        )
+
         if (!hasApiKey) {
             Text(
                 text = stringResource(Res.string.description_ai_missing_api_key),
@@ -182,11 +197,51 @@ private fun InputContent(
         }
 
         Button(
-            onClick = { onAnalyze(textState.text.toString()) },
+            onClick = { onAnalyze(textState.text.toString(), singleProduct) },
             enabled = hasApiKey && textState.text.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(Res.string.action_analyze))
+        }
+    }
+}
+
+@Composable
+private fun SingleProductToggle(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth().clickable { onCheckedChange(!checked) },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Text(
+            text = stringResource(Res.string.headline_ai_single_product),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(start = 8.dp).weight(1f),
+        )
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                PlainTooltip {
+                    Text(
+                        text = stringResource(Res.string.description_ai_single_product),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            },
+            state = rememberTooltipState(isPersistent = true),
+        ) {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription =
+                        stringResource(Res.string.description_ai_single_product),
+                )
+            }
         }
     }
 }
@@ -200,6 +255,7 @@ private enum class RecipeDialogAction {
 @Composable
 private fun ReviewContent(
     items: List<EditableMealItem>,
+    isSingleProduct: Boolean,
     suggestedRecipeName: String,
     onEdit: (Long, EditableMealItem.() -> EditableMealItem) -> Unit,
     onRemove: (Long) -> Unit,
@@ -210,6 +266,7 @@ private fun ReviewContent(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Recipe actions never appear in single-product mode, so the dialog can't be triggered there.
     var dialogAction by remember { mutableStateOf<RecipeDialogAction?>(null) }
 
     dialogAction?.let { action ->
@@ -245,6 +302,7 @@ private fun ReviewContent(
 
         ReviewActions(
             itemCount = items.size,
+            isSingleProduct = isSingleProduct,
             onSaveAndLog = { dialogAction = RecipeDialogAction.SaveAndLog },
             onSaveRecipe = { dialogAction = RecipeDialogAction.SaveOnly },
             onLog = onConfirm,
@@ -256,11 +314,20 @@ private fun ReviewContent(
 @Composable
 private fun ReviewActions(
     itemCount: Int,
+    isSingleProduct: Boolean,
     onSaveAndLog: () -> Unit,
     onSaveRecipe: () -> Unit,
     onLog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // A single product isn't a recipe: offer only "Log". Per-card "Save as product" still applies.
+    if (isSingleProduct) {
+        Button(onClick = onLog, modifier = modifier.fillMaxWidth()) {
+            Text(stringResource(Res.string.action_log))
+        }
+        return
+    }
+
     var menuExpanded by remember { mutableStateOf(false) }
 
     Row(

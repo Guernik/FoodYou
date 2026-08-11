@@ -32,16 +32,24 @@ internal class OpenAiRemoteDataSource(private val client: HttpClient, private va
         model: String,
         apiKey: String,
         description: String,
+        singleProduct: Boolean,
     ): Result<MealItemsDto> {
         return try {
             val url = "${baseUrl.trimEnd('/')}/chat/completions"
+
+            val systemPrompt =
+                if (singleProduct) {
+                    MealParseSchema.SINGLE_PRODUCT_SYSTEM_PROMPT
+                } else {
+                    MealParseSchema.SYSTEM_PROMPT
+                }
 
             val request =
                 ChatCompletionRequest(
                     model = model,
                     messages =
                         listOf(
-                            ChatMessage(role = "system", content = MealParseSchema.SYSTEM_PROMPT),
+                            ChatMessage(role = "system", content = systemPrompt),
                             ChatMessage(role = "user", content = description),
                         ),
                     responseFormat =

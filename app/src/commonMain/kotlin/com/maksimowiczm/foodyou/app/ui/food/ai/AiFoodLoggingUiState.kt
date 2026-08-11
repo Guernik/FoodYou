@@ -13,8 +13,16 @@ sealed interface AiFoodLoggingUiState {
 
     data object Loading : AiFoodLoggingUiState
 
-    /** Parsed items awaiting review/confirmation. Empty list = nothing recognized. */
-    data class Review(val items: List<EditableMealItem>) : AiFoodLoggingUiState
+    /**
+     * Parsed items awaiting review/confirmation. Empty list = nothing recognized.
+     *
+     * @param isSingleProduct The user requested single-product analysis; the review screen hides
+     *   recipe actions and offers only "Log".
+     */
+    data class Review(
+        val items: List<EditableMealItem>,
+        val isSingleProduct: Boolean,
+    ) : AiFoodLoggingUiState
 
     data object Logging : AiFoodLoggingUiState
 

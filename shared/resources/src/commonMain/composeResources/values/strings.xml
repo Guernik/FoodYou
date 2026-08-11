@@ -537,7 +537,10 @@
     <string name="headline_ai_food_logging">AI food logging</string>
     <string name="description_ai_food_logging">Describe your meal in plain language and let AI estimate the nutrition. The text you enter is sent to the AI endpoint you configure.</string>
     <string name="action_analyze">Analyze</string>
+    <string name="action_log">Log</string>
     <string name="action_log_items">Log %1$d items</string>
+    <string name="headline_ai_single_product">Analyse as single product</string>
+    <string name="description_ai_single_product">Combine everything you described into one product with merged nutrition, instead of one item per ingredient.</string>
     <string name="hint_ai_meal_description">e.g. two poached eggs and a piece of white toast</string>
     <string name="headline_ai_base_url">Base URL</string>
     <string name="headline_ai_model">Model</string>

@@ -30,6 +30,32 @@ internal object MealParseSchema {
         """
             .trimIndent()
 
+    /**
+     * Single-product variant: instructs the model to merge everything the user described into ONE
+     * combined item instead of one item per component. Uses the same [schema]; the `items` array
+     * simply contains a single element.
+     */
+    val SINGLE_PRODUCT_SYSTEM_PROMPT =
+        """
+        You are a nutrition assistant. The user describes a meal in natural language.
+        Treat the ENTIRE description as ONE combined dish and return EXACTLY ONE item in the items
+        array. Do NOT split it into separate components. For that single item return:
+        - name: one concise combined name for the whole dish (e.g. "Tortilla de carne y queso").
+        - isLiquid: true only if the whole dish is a drink/liquid measured by volume.
+        - estimatedGrams: the TOTAL weight of the whole combined dish (the sum of all its
+          components) in grams (or millilitres for liquids). Must be greater than 0.
+        - nutrition: values PER 100 GRAMS of the FINISHED COMBINED DISH (or per 100 ml for liquids),
+          NOT for the whole portion and NOT the sum of the components' per-100g values. Compute the
+          weight-weighted average of the components across the total weight, so the result stays a
+          realistic per-100g figure for the combined dish.
+          energy is in kilocalories (kcal); all other fields are in grams.
+          Provide: energy, protein, carbohydrates, fat, dietaryFiber, sugars, saturatedFats, sodium.
+          Use realistic reference values; leave a field null only if genuinely unknown.
+        Only describe foods explicitly mentioned. Never invent items. If nothing edible is described,
+        return an empty items array.
+        """
+            .trimIndent()
+
     private val NUTRITION_FIELDS =
         listOf(
             "energy",

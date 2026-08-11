@@ -8,7 +8,10 @@ class ParseMealDescriptionUseCase(
     private val parser: MealDescriptionParser,
     private val logger: Logger,
 ) {
-    suspend fun parse(description: String): Result<List<MealItem>, ParseMealError> {
+    suspend fun parse(
+        description: String,
+        singleProduct: Boolean,
+    ): Result<List<MealItem>, ParseMealError> {
         if (description.isBlank()) {
             return logger.logAndReturnFailure(
                 tag = TAG,
@@ -18,7 +21,7 @@ class ParseMealDescriptionUseCase(
             )
         }
 
-        return parser.parse(description.trim())
+        return parser.parse(description.trim(), singleProduct)
     }
 
     private companion object {
