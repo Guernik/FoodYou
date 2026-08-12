@@ -11,6 +11,8 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,6 +37,9 @@ import org.jetbrains.compose.resources.stringResource
 internal fun QuickAddScreen(
     onBack: () -> Unit,
     onSave: () -> Unit,
+    aiState: QuickAddAiState,
+    onAnalyze: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     state: QuickAddFormState = rememberQuickAddFormState(),
 ) {
@@ -73,6 +78,7 @@ internal fun QuickAddScreen(
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.headline_quick_add)) },
@@ -109,7 +115,12 @@ internal fun QuickAddScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(Modifier.height(16.dp))
-                QuickAddForm(state = state, modifier = Modifier.focusRequester(focusRequester))
+                QuickAddForm(
+                    state = state,
+                    aiState = aiState,
+                    onAnalyze = onAnalyze,
+                    modifier = Modifier.focusRequester(focusRequester),
+                )
             }
         }
     }

@@ -16,10 +16,22 @@ internal class CreateQuickAddViewModel(
     private val date: LocalDate,
     private val manualDiaryEntryRepository: ManualDiaryEntryRepository,
     private val dateProvider: DateProvider,
+    private val aiDelegate: QuickAddAiDelegate,
 ) : ViewModel() {
 
     private val eventChannel = Channel<QuickAddUiEvent>()
     val uiEvents = eventChannel.receiveAsFlow()
+
+    val aiState = aiDelegate.state
+
+    init {
+        aiDelegate.observeApiKey(viewModelScope)
+    }
+
+    fun analyze(name: String, onResult: (QuickAddAiTotals) -> Unit) =
+        aiDelegate.analyze(viewModelScope, name, onResult)
+
+    fun dismissAiError() = aiDelegate.dismissError()
 
     fun addEntry(
         name: String,
@@ -27,6 +39,7 @@ internal class CreateQuickAddViewModel(
         proteins: Double,
         carbohydrates: Double,
         fats: Double,
+        saveAsProduct: Boolean,
     ) {
         viewModelScope.launch {
             manualDiaryEntryRepository.insert(
@@ -42,6 +55,22 @@ internal class CreateQuickAddViewModel(
                     ),
                 createdAt = dateProvider.now(),
             )
+
+            // Saving the product is secondary; a failure must not stop the entry from being logged.
+            if (saveAsProduct) {
+                val saved =
+                    aiDelegate.saveAsProduct(
+                        name = name,
+                        energyKcal = energy,
+                        proteins = proteins,
+                        carbohydrates = carbohydrates,
+                        fats = fats,
+                    )
+
+                eventChannel.send(
+                    if (saved) QuickAddUiEvent.ProductSaved else QuickAddUiEvent.ProductSaveFailed
+                )
+            }
 
             eventChannel.send(QuickAddUiEvent.Saved)
         }
