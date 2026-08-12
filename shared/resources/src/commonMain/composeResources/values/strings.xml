@@ -580,4 +580,6 @@
     <string name="error_ai_product_save_failed">Could not save product</string>
     <string name="neutral_ai_recipe_saved">Recipe saved</string>
     <string name="error_ai_recipe_save_failed">Could not save recipe</string>
+    <string name="action_ai_analysis">AI analysis</string>
+    <string name="action_also_save_as_product">Also save as product</string>
 </resources>

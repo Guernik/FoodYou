@@ -1,11 +1,14 @@
 package com.maksimowiczm.foodyou.app.ui.food.diary.quickadd
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.foodyou.app.ui.common.utility.LocalEnergyFormatter
 import com.maksimowiczm.foodyou.common.compose.extension.LaunchedCollectWithLifecycle
 import com.maksimowiczm.foodyou.fooddiary.domain.entity.ManualDiaryEntryId
+import foodyou.app.generated.resources.*
+import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -18,15 +21,21 @@ fun UpdateQuickAddScreen(
 ) {
     val viewModel: UpdateQuickAddViewModel = koinViewModel { parametersOf(ManualDiaryEntryId(id)) }
     val energyFormatter = LocalEnergyFormatter.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val latestOnSave by rememberUpdatedState(onSave)
     LaunchedCollectWithLifecycle(viewModel.uiEvents) {
         when (it) {
             QuickAddUiEvent.Saved -> latestOnSave()
+            QuickAddUiEvent.ProductSaved ->
+                snackbarHostState.showSnackbar(getString(Res.string.neutral_ai_product_saved))
+            QuickAddUiEvent.ProductSaveFailed ->
+                snackbarHostState.showSnackbar(getString(Res.string.error_ai_product_save_failed))
         }
     }
 
     val entry = viewModel.entry.collectAsStateWithLifecycle().value
+    val aiState = viewModel.aiState.collectAsStateWithLifecycle().value
 
     if (entry == null) {
         // TODO loading state
@@ -57,8 +66,22 @@ fun UpdateQuickAddScreen(
                 proteins = proteins,
                 carbohydrates = carbohydrates,
                 fats = fats,
+                saveAsProduct = formState.saveAsProduct,
             )
         },
+        aiState = aiState,
+        onAnalyze = {
+            viewModel.analyze(formState.name.value) { totals ->
+                formState.applyTotals(
+                    name = totals.name,
+                    energy = energyFormatter.fromKcal(totals.energyKcal),
+                    proteins = totals.proteins,
+                    carbohydrates = totals.carbohydrates,
+                    fats = totals.fats,
+                )
+            }
+        },
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         state = formState,
     )

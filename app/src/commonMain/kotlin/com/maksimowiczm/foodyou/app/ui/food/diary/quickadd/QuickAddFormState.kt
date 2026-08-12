@@ -135,6 +135,8 @@ internal fun rememberQuickAddFormState(
             .collectLatest { energyForm.textFieldState.setTextAndPlaceCursorAtEnd(it) }
     }
 
+    val saveAsProductState = rememberSaveable { mutableStateOf(false) }
+
     val isModifiedState =
         remember(
             nameForm,
@@ -147,12 +149,14 @@ internal fun rememberQuickAddFormState(
             fats,
             energyForm,
             energyInUserUnit,
+            saveAsProductState,
         ) {
             derivedStateOf {
                 nameForm.value != name ||
                     proteinsForm.value != proteins ||
                     carbohydratesForm.value != carbohydrates ||
                     fatsForm.value != fats ||
+                    saveAsProductState.value ||
                     if (energyInUserUnit == null) {
                         energyForm.value != null && energyForm.value != 0.0
                     } else {
@@ -168,6 +172,7 @@ internal fun rememberQuickAddFormState(
         fatsForm,
         energyForm,
         autoCalculateEnergyState,
+        saveAsProductState,
         isModifiedState,
     ) {
         QuickAddFormState(
@@ -177,6 +182,7 @@ internal fun rememberQuickAddFormState(
             fats = fatsForm,
             energy = energyForm,
             autoCalculateEnergyState = autoCalculateEnergyState,
+            saveAsProductState = saveAsProductState,
             isModified = isModifiedState,
         )
     }
@@ -190,9 +196,13 @@ internal class QuickAddFormState(
     val fats: FormField<Double?, QuickAddFormFieldError>,
     val energy: FormField<Double?, QuickAddFormFieldError>,
     autoCalculateEnergyState: MutableState<Boolean>,
+    saveAsProductState: MutableState<Boolean>,
     isModified: State<Boolean>,
 ) {
     var autoCalculateEnergy by autoCalculateEnergyState
+
+    /** Whether the entry should also be stored as a reusable product. */
+    var saveAsProduct by saveAsProductState
 
     val isModified by isModified
 
@@ -202,5 +212,30 @@ internal class QuickAddFormState(
             carbohydrates.error == null &&
             fats.error == null &&
             energy.error == null
+    }
+
+    /**
+     * Writes AI results into the fields.
+     *
+     * Energy is expected in the unit the form displays. Automatic energy calculation is switched
+     * off first, otherwise the 4/4/9 macro estimate would immediately overwrite the value the AI
+     * returned, which accounts for the actual food rather than its macros alone.
+     */
+    fun applyTotals(
+        name: String,
+        energy: Double,
+        proteins: Double,
+        carbohydrates: Double,
+        fats: Double,
+    ) {
+        autoCalculateEnergy = false
+
+        this.name.textFieldState.setTextAndPlaceCursorAtEnd(name)
+        this.proteins.textFieldState.setTextAndPlaceCursorAtEnd(proteins.formatClipZeros())
+        this.carbohydrates.textFieldState.setTextAndPlaceCursorAtEnd(
+            carbohydrates.formatClipZeros()
+        )
+        this.fats.textFieldState.setTextAndPlaceCursorAtEnd(fats.formatClipZeros())
+        this.energy.textFieldState.setTextAndPlaceCursorAtEnd(energy.formatClipZeros())
     }
 }
