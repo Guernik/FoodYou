@@ -3,6 +3,7 @@
 export ANDROID_HOME := env_var_or_default('ANDROID_HOME', `sed -n 's/^sdk.dir=//p' local.properties`)
 build_tools := ANDROID_HOME / 'build-tools' / shell('ls "$1/build-tools" 2>/dev/null | sort -V | tail -1', ANDROID_HOME)
 export PATH := build_tools + ':' + env_var('PATH')
+export KTFMT_JAR := env_var_or_default('KTFMT_JAR', '/Users/emilio/ktfmt-0.64-with-dependencies.jar')
 
 default:
     @just --list

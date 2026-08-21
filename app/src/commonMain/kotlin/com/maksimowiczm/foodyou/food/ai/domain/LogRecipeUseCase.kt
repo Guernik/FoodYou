@@ -43,8 +43,9 @@ class LogRecipeUseCase(
         mealId: Long,
         date: LocalDate,
     ): Result<Unit, LogRecipeError> {
-        val recipe = observeFoodUseCase.observe(recipeId).first() as? Recipe
-            ?: return Err(LogRecipeError.RecipeNotFound)
+        val recipe =
+            observeFoodUseCase.observe(recipeId).first() as? Recipe
+                ?: return Err(LogRecipeError.RecipeNotFound)
 
         return createFoodDiaryEntryUseCase
             .createDiaryEntry(

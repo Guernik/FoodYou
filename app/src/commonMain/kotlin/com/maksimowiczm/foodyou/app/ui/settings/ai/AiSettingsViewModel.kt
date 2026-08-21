@@ -6,7 +6,6 @@ import com.maksimowiczm.foodyou.common.domain.userpreferences.UserPreferencesRep
 import com.maksimowiczm.foodyou.food.ai.domain.LlmApiKeyRepository
 import com.maksimowiczm.foodyou.food.ai.domain.LlmSettings
 import com.maksimowiczm.foodyou.food.ai.domain.LlmVendor
-import com.maksimowiczm.foodyou.food.ai.domain.TestConnectionResult
 import com.maksimowiczm.foodyou.food.ai.domain.TestLlmConnectionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

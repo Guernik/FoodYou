@@ -31,19 +31,19 @@ fun Module.foodSearchInfrastructureModule() {
 
     factoryOf(::OpenFoodFactsRemoteMediatorFactory).bind<ProductRemoteMediatorFactory>()
     factory {
-            USDARemoteMediatorFactory(
-                foodSearchPreferencesRepository = userPreferencesRepository(),
-                transactionProvider = get(),
-                productRepository = get(),
-                historyRepository = get(),
-                remoteDataSource = get(),
-                pagingKeyDao = get(),
-                usdaMapper = get(),
-                remoteMapper = get(),
-                dateProvider = get(),
-                logger = get(),
-            )
-        }
+        USDARemoteMediatorFactory(
+            foodSearchPreferencesRepository = userPreferencesRepository(),
+            transactionProvider = get(),
+            productRepository = get(),
+            historyRepository = get(),
+            remoteDataSource = get(),
+            pagingKeyDao = get(),
+            usdaMapper = get(),
+            remoteMapper = get(),
+            dateProvider = get(),
+            logger = get(),
+        )
+    }
         .bind<ProductRemoteMediatorFactory>()
 }
 

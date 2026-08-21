@@ -83,7 +83,8 @@ internal fun rememberProductFormState(product: Product? = null): ProductFormStat
                             onNotPositive = { ProductFormFieldError.NotPositive }
                         )
                 },
-            textFieldState = rememberTextFieldState(product?.packageWeight?.formatClipZeros() ?: ""),
+            textFieldState =
+                rememberTextFieldState(product?.packageWeight?.formatClipZeros() ?: ""),
         )
 
     val servingWeight =
@@ -103,7 +104,8 @@ internal fun rememberProductFormState(product: Product? = null): ProductFormStat
                             onNotPositive = { ProductFormFieldError.NotPositive }
                         )
                 },
-            textFieldState = rememberTextFieldState(product?.servingWeight?.formatClipZeros() ?: ""),
+            textFieldState =
+                rememberTextFieldState(product?.servingWeight?.formatClipZeros() ?: ""),
         )
 
     val proteins = rememberRequiredFormField(product?.nutritionFacts?.proteins?.value)
@@ -1247,7 +1249,8 @@ internal fun ProductFormState.nutritionFacts(multiplier: Float) =
         selenium =
             seleniumMicro.value.applyMultiplier(multiplier)?.div(1_000_000).toNutrientValue(),
         iodine = iodineMicro.value.applyMultiplier(multiplier)?.div(1_000_000).toNutrientValue(),
-        chromium = chromiumMicro.value.applyMultiplier(multiplier)?.div(1_000_000).toNutrientValue(),
+        chromium =
+            chromiumMicro.value.applyMultiplier(multiplier)?.div(1_000_000).toNutrientValue(),
     )
 
 private fun Float?.applyMultiplier(multiplier: Float): Float? = this?.let { it * multiplier }

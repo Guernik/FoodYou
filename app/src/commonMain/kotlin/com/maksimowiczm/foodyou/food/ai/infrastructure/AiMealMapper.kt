@@ -33,6 +33,5 @@ internal class AiMealMapper {
         )
     }
 
-    private fun Double?.sanitized(): Double? =
-        this?.takeIf { it.isFinite() && it >= 0.0 }
+    private fun Double?.sanitized(): Double? = this?.takeIf { it.isFinite() && it >= 0.0 }
 }

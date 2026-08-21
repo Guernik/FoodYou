@@ -35,63 +35,62 @@ class UnpackFoodDiaryEntryUseCase(
         measurement: Measurement,
         mealId: Long,
         date: LocalDate,
-    ): Result<Unit, UnpackFoodDiaryEntryError> =
-        transactionProvider.withTransaction {
-            val entry = entryRepository.observe(id).firstOrNull()
-            if (entry == null) {
-                return@withTransaction logger.logAndReturnFailure(
-                    tag = TAG,
-                    error = UnpackFoodDiaryEntryError.EntryNotFoundFood,
-                    message = { "Diary entry with id $id not found" },
-                )
-            }
-
-            val food = entry.food
-            if (food !is DiaryFoodRecipe) {
-                return@withTransaction logger.logAndReturnFailure(
-                    tag = TAG,
-                    error = UnpackFoodDiaryEntryError.EntryCannotBeUnpackedFood,
-                    message = { "Diary entry with id $id cannot be unpacked" },
-                )
-            }
-
-            val meal = mealRepository.observeMeal(mealId).firstOrNull()
-            if (meal == null) {
-                return@withTransaction logger.logAndReturnFailure(
-                    tag = TAG,
-                    error = UnpackFoodDiaryEntryError.MealNotFound,
-                    message = { "Meal with id $mealId not found" },
-                )
-            }
-
-            // Replace the entry with unpacked entries
-            entryRepository.delete(entry.id)
-
-            val now = dateProvider.now()
-            val unpacked = food.unpack(measurement)
-            unpacked.forEach {
-                val entry =
-                    FoodDiaryEntry(
-                        id = FoodDiaryEntryId(0),
-                        mealId = mealId,
-                        date = date,
-                        measurement = it.measurement,
-                        food = it.food,
-                        createdAt = entry.createdAt,
-                        updatedAt = now,
-                    )
-
-                entryRepository.insert(
-                    mealId = entry.mealId,
-                    date = entry.date,
-                    measurement = entry.measurement,
-                    food = entry.food,
-                    createdAt = entry.createdAt,
-                )
-            }
-
-            Ok(Unit)
+    ): Result<Unit, UnpackFoodDiaryEntryError> = transactionProvider.withTransaction {
+        val entry = entryRepository.observe(id).firstOrNull()
+        if (entry == null) {
+            return@withTransaction logger.logAndReturnFailure(
+                tag = TAG,
+                error = UnpackFoodDiaryEntryError.EntryNotFoundFood,
+                message = { "Diary entry with id $id not found" },
+            )
         }
+
+        val food = entry.food
+        if (food !is DiaryFoodRecipe) {
+            return@withTransaction logger.logAndReturnFailure(
+                tag = TAG,
+                error = UnpackFoodDiaryEntryError.EntryCannotBeUnpackedFood,
+                message = { "Diary entry with id $id cannot be unpacked" },
+            )
+        }
+
+        val meal = mealRepository.observeMeal(mealId).firstOrNull()
+        if (meal == null) {
+            return@withTransaction logger.logAndReturnFailure(
+                tag = TAG,
+                error = UnpackFoodDiaryEntryError.MealNotFound,
+                message = { "Meal with id $mealId not found" },
+            )
+        }
+
+        // Replace the entry with unpacked entries
+        entryRepository.delete(entry.id)
+
+        val now = dateProvider.now()
+        val unpacked = food.unpack(measurement)
+        unpacked.forEach {
+            val entry =
+                FoodDiaryEntry(
+                    id = FoodDiaryEntryId(0),
+                    mealId = mealId,
+                    date = date,
+                    measurement = it.measurement,
+                    food = it.food,
+                    createdAt = entry.createdAt,
+                    updatedAt = now,
+                )
+
+            entryRepository.insert(
+                mealId = entry.mealId,
+                date = entry.date,
+                measurement = entry.measurement,
+                food = entry.food,
+                createdAt = entry.createdAt,
+            )
+        }
+
+        Ok(Unit)
+    }
 
     private companion object {
         const val TAG = "UnpackFoodDiaryEntryUseCase"

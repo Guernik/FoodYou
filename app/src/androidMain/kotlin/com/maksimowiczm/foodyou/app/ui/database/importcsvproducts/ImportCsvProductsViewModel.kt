@@ -87,12 +87,11 @@ internal class ImportCsvProductsViewModel(
 
         _uiState.value = UiState.Importing(0)
 
-        val mapper =
-            header.map { columnName ->
-                fieldMap.firstNotNullOfOrNull { (field, value) ->
-                    if (value == columnName) field else null
-                }
+        val mapper = header.map { columnName ->
+            fieldMap.firstNotNullOfOrNull { (field, value) ->
+                if (value == columnName) field else null
             }
+        }
 
         viewModelScope.launch {
             try {

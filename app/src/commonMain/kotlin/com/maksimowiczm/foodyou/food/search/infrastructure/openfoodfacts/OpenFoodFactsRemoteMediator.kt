@@ -149,8 +149,9 @@ internal class OpenFoodFactsRemoteMediator<K : Any, T : Any>(
         }
     }
 
-    private fun OpenFoodFactsProduct.toDomainProduct(): Product? =
-        runCatching { this.let(offMapper::toRemoteProduct).let(remoteMapper::toModel) }.getOrNull()
+    private fun OpenFoodFactsProduct.toDomainProduct(): Product? = runCatching {
+        this.let(offMapper::toRemoteProduct).let(remoteMapper::toModel)
+    }.getOrNull()
 
     private suspend fun Product.insert(now: Instant = dateProvider.nowInstant()) {
         val id =

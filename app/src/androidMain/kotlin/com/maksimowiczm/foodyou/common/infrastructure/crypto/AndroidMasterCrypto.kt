@@ -39,27 +39,26 @@ internal class AndroidMasterCrypto() : MasterCrypto {
             }
     }
 
-    private suspend fun initializeOrGetKey(): SecretKey =
-        mutex.withLock {
-            val existingKey = keyStore.getKey(KEY_ALIAS, null) as? SecretKey
-            if (existingKey != null) {
-                return@withLock existingKey
-            }
-
-            val keyGenerator = javax.crypto.KeyGenerator.getInstance("AES", ANDROID_KEYSTORE)
-
-            val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            val keyGenParameterSpec =
-                KeyGenParameterSpec.Builder(KEY_ALIAS, purposes)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .setKeySize(256)
-                    .setUserAuthenticationRequired(false)
-                    .build()
-
-            keyGenerator.init(keyGenParameterSpec)
-            return@withLock keyGenerator.generateKey()
+    private suspend fun initializeOrGetKey(): SecretKey = mutex.withLock {
+        val existingKey = keyStore.getKey(KEY_ALIAS, null) as? SecretKey
+        if (existingKey != null) {
+            return@withLock existingKey
         }
+
+        val keyGenerator = javax.crypto.KeyGenerator.getInstance("AES", ANDROID_KEYSTORE)
+
+        val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        val keyGenParameterSpec =
+            KeyGenParameterSpec.Builder(KEY_ALIAS, purposes)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .setUserAuthenticationRequired(false)
+                .build()
+
+        keyGenerator.init(keyGenParameterSpec)
+        return@withLock keyGenerator.generateKey()
+    }
 
     override suspend fun encrypt(data: ByteArray): ByteArray {
         val secretKey = initializeOrGetKey()

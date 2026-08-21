@@ -27,24 +27,24 @@ internal fun Module.sponsorshipInfrastructureModule() {
         RateLimiter(dateProvider = get(), maxRequests = 10, timeWindow = 1.seconds)
     }
     factory {
-            GithubSponsorsApiClient(
-                httpClient = get(named("ktorSponsorshipHttpClient")),
-                config = get(),
-                rateLimiter = get(named("sponsorshipRateLimiter")),
-            )
-        }
+        GithubSponsorsApiClient(
+            httpClient = get(named("ktorSponsorshipHttpClient")),
+            config = get(),
+            rateLimiter = get(named("sponsorshipRateLimiter")),
+        )
+    }
         .bind<SponsorsNetworkDataSource>()
 
     userPreferencesRepositoryOf(::DataStoreSponsorshipPreferencesDataSource)
 
     factory {
-            SponsorRepositoryImpl(
-                sponsorshipDao = get(),
-                networkDataSource = get(),
-                preferences = userPreferencesRepository(),
-                logger = get(),
-            )
-        }
+        SponsorRepositoryImpl(
+            sponsorshipDao = get(),
+            networkDataSource = get(),
+            preferences = userPreferencesRepository(),
+            logger = get(),
+        )
+    }
         .bind<SponsorRepository>()
 
     factory { database.sponsorshipDao }

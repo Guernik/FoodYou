@@ -171,7 +171,8 @@ private fun ModelField(
                     readOnly = true,
                     label = { Text(stringResource(Res.string.headline_ai_model)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    modifier =
+                        Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 )
                 ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     vendor.models.forEach { option ->
@@ -263,8 +264,7 @@ private fun TestRow(state: TestState, onTest: () -> Unit) {
 
 @Composable
 private fun StatusText(success: Boolean, text: String) {
-    val color =
-        if (success) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+    val color = if (success) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = if (success) Icons.Filled.CheckCircle else Icons.Filled.Error,

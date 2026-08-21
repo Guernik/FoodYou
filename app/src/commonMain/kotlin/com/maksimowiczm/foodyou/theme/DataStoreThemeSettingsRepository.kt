@@ -26,26 +26,22 @@ internal class DataStoreThemeSettingsRepository(dataStore: DataStore<Preferences
 
     private companion object {
         val Preferences.themeOption: ThemeOption
-            get() =
-                runCatching {
-                        ThemeOption.entries[this[Keys.themeOption] ?: ThemeOption.System.ordinal]
-                    }
-                    .getOrElse { ThemeOption.System }
+            get() = runCatching {
+                ThemeOption.entries[this[Keys.themeOption] ?: ThemeOption.System.ordinal]
+            }
+                .getOrElse { ThemeOption.System }
 
         val Preferences.themeStyle: ThemeStyle
-            get() =
-                runCatching {
-                        ThemeStyle.entries[this[Keys.themeStyle] ?: ThemeStyle.TonalSpot.ordinal]
-                    }
-                    .getOrElse { ThemeStyle.TonalSpot }
+            get() = runCatching {
+                ThemeStyle.entries[this[Keys.themeStyle] ?: ThemeStyle.TonalSpot.ordinal]
+            }
+                .getOrElse { ThemeStyle.TonalSpot }
 
         val Preferences.themeContrast: ThemeContrast
-            get() =
-                runCatching {
-                        ThemeContrast.entries[
-                                this[Keys.themeContrast] ?: ThemeContrast.Default.ordinal]
-                    }
-                    .getOrElse { ThemeContrast.Default }
+            get() = runCatching {
+                ThemeContrast.entries[this[Keys.themeContrast] ?: ThemeContrast.Default.ordinal]
+            }
+                .getOrElse { ThemeContrast.Default }
 
         val Preferences.theme: Theme
             get() {

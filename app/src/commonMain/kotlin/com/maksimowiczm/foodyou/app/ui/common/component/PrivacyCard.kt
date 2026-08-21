@@ -82,8 +82,9 @@ fun OpenFoodFactsPrivacyCard(
     val uriHandler = LocalUriHandler.current
     val credentialsRepository: OpenFoodFactsCredentialsRepository = koinInject()
 
-    val hasCredentials by
-        remember { credentialsRepository.hasCredentials() }.collectAsStateWithLifecycle(false)
+    val hasCredentials by remember {
+        credentialsRepository.hasCredentials()
+    }.collectAsStateWithLifecycle(false)
 
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     if (showLoginDialog) {

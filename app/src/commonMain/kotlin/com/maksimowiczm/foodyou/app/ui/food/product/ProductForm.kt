@@ -778,16 +778,18 @@ private fun SourcePicker(
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 // Ai is a system-assigned source (AI food logging); it must not be selectable
                 // as the origin of a manually-created product.
-                FoodSource.Type.entries.filter { it != FoodSource.Type.Ai }.forEach {
-                    DropdownMenuItem(
-                        leadingIcon = { it.Icon() },
-                        text = { Text(it.stringResource()) },
-                        onClick = {
-                            expanded = false
-                            onTypeChange(it)
-                        },
-                    )
-                }
+                FoodSource.Type.entries
+                    .filter { it != FoodSource.Type.Ai }
+                    .forEach {
+                        DropdownMenuItem(
+                            leadingIcon = { it.Icon() },
+                            text = { Text(it.stringResource()) },
+                            onClick = {
+                                expanded = false
+                                onTypeChange(it)
+                            },
+                        )
+                    }
             }
         }
 

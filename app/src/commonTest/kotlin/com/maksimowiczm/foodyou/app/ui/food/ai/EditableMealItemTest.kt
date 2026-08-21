@@ -45,21 +45,22 @@ class EditableMealItemTest {
     @Test
     fun `edited macros round-trip into per-100g nutrition facts`() {
         val edited =
-            editable().copy(
-                name = "  Poached egg  ",
-                grams = 120.0,
-                nutrition =
-                    EditableNutrition(
-                        energy = 143.0,
-                        proteins = 12.5,
-                        carbohydrates = 0.7,
-                        fats = 9.5,
-                        dietaryFiber = 0.0,
-                        sugars = 0.7,
-                        saturatedFats = 3.1,
-                        sodium = 0.12,
-                    ),
-            )
+            editable()
+                .copy(
+                    name = "  Poached egg  ",
+                    grams = 120.0,
+                    nutrition =
+                        EditableNutrition(
+                            energy = 143.0,
+                            proteins = 12.5,
+                            carbohydrates = 0.7,
+                            fats = 9.5,
+                            dietaryFiber = 0.0,
+                            sugars = 0.7,
+                            saturatedFats = 3.1,
+                            sodium = 0.12,
+                        ),
+                )
 
         val result = edited.toMealItem()
 
@@ -74,7 +75,8 @@ class EditableMealItemTest {
 
     @Test
     fun `null macro maps to incomplete`() {
-        val result = editable().copy(nutrition = editable().nutrition.copy(sugars = null)).toMealItem()
+        val result =
+            editable().copy(nutrition = editable().nutrition.copy(sugars = null)).toMealItem()
 
         assertEquals(NutrientValue.Incomplete(null), result.nutritionFactsPer100g.sugars)
     }

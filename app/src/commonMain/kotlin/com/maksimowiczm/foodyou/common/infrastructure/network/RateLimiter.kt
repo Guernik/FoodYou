@@ -21,16 +21,15 @@ internal class RateLimiter(
     private val requests = mutableListOf<Instant>()
     private val mutex = Mutex()
 
-    suspend fun canMakeRequest(): Boolean =
-        mutex.withLock {
-            val now = dateProvider.nowInstant()
-            val windowStart = now - timeWindow
+    suspend fun canMakeRequest(): Boolean = mutex.withLock {
+        val now = dateProvider.nowInstant()
+        val windowStart = now - timeWindow
 
-            // Remove requests outside the time window
-            requests.removeAll { it < windowStart }
+        // Remove requests outside the time window
+        requests.removeAll { it < windowStart }
 
-            return requests.size < maxRequests
-        }
+        return requests.size < maxRequests
+    }
 
     suspend fun recordRequest() = mutex.withLock { requests.add(dateProvider.nowInstant()) }
 }

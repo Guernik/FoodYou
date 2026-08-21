@@ -13,7 +13,8 @@ internal class DataStoreLlmSettingsRepository(dataStore: DataStore<Preferences>)
 
     override fun Preferences.toUserPreferences(): LlmSettings =
         LlmSettings(
-            baseUrl = this[Keys.BaseUrl]?.takeIf { it.isNotBlank() } ?: LlmSettings.DEFAULT_BASE_URL,
+            baseUrl =
+                this[Keys.BaseUrl]?.takeIf { it.isNotBlank() } ?: LlmSettings.DEFAULT_BASE_URL,
             model = this[Keys.Model]?.takeIf { it.isNotBlank() } ?: LlmSettings.DEFAULT_MODEL,
         )
 

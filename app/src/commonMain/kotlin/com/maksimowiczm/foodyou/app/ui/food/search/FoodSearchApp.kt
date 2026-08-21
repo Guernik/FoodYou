@@ -261,6 +261,7 @@ private fun ListStates.state(source: FoodFilter.Source) =
     when (source) {
         FoodFilter.Source.Recent -> recent
         FoodFilter.Source.YourFood -> yourFood
+        FoodFilter.Source.Ai -> ai
         FoodFilter.Source.OpenFoodFacts -> openFoodFacts
         FoodFilter.Source.USDA -> usda
         FoodFilter.Source.SwissFoodCompositionDatabase -> swiss

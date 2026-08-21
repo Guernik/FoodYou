@@ -21,8 +21,8 @@ sealed interface LogMealError {
 
 /**
  * Persists confirmed [MealItem]s. Each item becomes a reusable [FoodSource.Type.Ai] product AND a
- * diary entry in the scoped meal/date, logged as [Measurement.Serving] with the serving weight equal
- * to the LLM's estimated grams (preserving the per-100g nutrition invariant).
+ * diary entry in the scoped meal/date, logged as [Measurement.Serving] with the serving weight
+ * equal to the LLM's estimated grams (preserving the per-100g nutrition invariant).
  */
 class LogMealItemsUseCase(
     private val createProductUseCase: CreateProductUseCase,

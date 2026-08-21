@@ -50,26 +50,25 @@ class AndroidIdentityCrypto : IdentityCrypto {
             }
     }
 
-    private suspend fun initializeOrGetKey(): KeyStore.PrivateKeyEntry =
-        mutex.withLock {
-            val existingKey = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.PrivateKeyEntry
-            if (existingKey != null) {
-                return@withLock existingKey
-            }
-
-            val kpg = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEYSTORE)
-
-            val spec =
-                KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_SIGN)
-                    .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                    .setUserAuthenticationRequired(false)
-                    .build()
-
-            kpg.initialize(spec)
-            kpg.genKeyPair()
-
-            return@withLock keyStore.getEntry(KEY_ALIAS, null) as KeyStore.PrivateKeyEntry
+    private suspend fun initializeOrGetKey(): KeyStore.PrivateKeyEntry = mutex.withLock {
+        val existingKey = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.PrivateKeyEntry
+        if (existingKey != null) {
+            return@withLock existingKey
         }
+
+        val kpg = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEYSTORE)
+
+        val spec =
+            KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_SIGN)
+                .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                .setUserAuthenticationRequired(false)
+                .build()
+
+        kpg.initialize(spec)
+        kpg.genKeyPair()
+
+        return@withLock keyStore.getEntry(KEY_ALIAS, null) as KeyStore.PrivateKeyEntry
+    }
 
     override suspend fun sign(data: ByteArray): ByteArray {
         val key = initializeOrGetKey()

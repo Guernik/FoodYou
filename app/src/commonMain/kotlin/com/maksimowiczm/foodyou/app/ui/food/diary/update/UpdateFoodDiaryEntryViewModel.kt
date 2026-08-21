@@ -136,18 +136,15 @@ private val DiaryFood.possibleMeasurementTypes: Flow<List<MeasurementType>>
         )
 
 private val DiaryFood.suggestions: Flow<List<Measurement>>
-    get() =
-        possibleMeasurementTypes.map { list ->
-            list.map {
-                when (it) {
-                    MeasurementType.Gram -> Measurement.Gram(Measurement.Gram.DEFAULT)
-                    MeasurementType.Ounce -> Measurement.Ounce(Measurement.Ounce.DEFAULT)
-                    MeasurementType.Package -> Measurement.Package(Measurement.Package.DEFAULT)
-                    MeasurementType.Serving -> Measurement.Serving(Measurement.Serving.DEFAULT)
-                    MeasurementType.Milliliter ->
-                        Measurement.Milliliter(Measurement.Milliliter.DEFAULT)
-                    MeasurementType.FluidOunce ->
-                        Measurement.FluidOunce(Measurement.FluidOunce.DEFAULT)
-                }
+    get() = possibleMeasurementTypes.map { list ->
+        list.map {
+            when (it) {
+                MeasurementType.Gram -> Measurement.Gram(Measurement.Gram.DEFAULT)
+                MeasurementType.Ounce -> Measurement.Ounce(Measurement.Ounce.DEFAULT)
+                MeasurementType.Package -> Measurement.Package(Measurement.Package.DEFAULT)
+                MeasurementType.Serving -> Measurement.Serving(Measurement.Serving.DEFAULT)
+                MeasurementType.Milliliter -> Measurement.Milliliter(Measurement.Milliliter.DEFAULT)
+                MeasurementType.FluidOunce -> Measurement.FluidOunce(Measurement.FluidOunce.DEFAULT)
             }
         }
+    }
