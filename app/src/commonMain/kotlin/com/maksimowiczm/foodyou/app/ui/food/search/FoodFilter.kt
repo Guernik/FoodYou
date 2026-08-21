@@ -32,6 +32,7 @@ internal data class FoodFilter(val source: Source = DefaultFilter) {
     enum class Source {
         Recent,
         YourFood,
+        Ai,
         OpenFoodFacts,
         USDA,
         SwissFoodCompositionDatabase;
@@ -53,6 +54,7 @@ internal data class FoodFilter(val source: Source = DefaultFilter) {
                         modifier = modifier,
                     )
 
+                Ai -> FoodSource.Type.Ai.Icon(modifier)
                 OpenFoodFacts -> FoodSource.Type.OpenFoodFacts.Icon(modifier)
                 USDA -> FoodSource.Type.USDA.Icon(modifier)
                 SwissFoodCompositionDatabase -> FoodSource.Type.SwissFoodCompositionDatabase.Icon()
@@ -63,6 +65,7 @@ internal data class FoodFilter(val source: Source = DefaultFilter) {
             when (this) {
                 Recent -> stringResource(Res.string.headline_recent)
                 YourFood -> stringResource(Res.string.headline_your_food)
+                Ai -> stringResource(Res.string.headline_ai_food)
                 OpenFoodFacts -> FoodSource.Type.OpenFoodFacts.stringResource()
                 USDA -> FoodSource.Type.USDA.stringResource()
                 SwissFoodCompositionDatabase ->

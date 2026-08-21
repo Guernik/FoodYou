@@ -218,3 +218,13 @@ Follow-up UX work. Request transcript + implementation notes:
 | File | Reason |
 |---|---|
 | `app/ui/database/externaldatabases/UpdateLlmSettingsDialog.kt` | Superseded by `app/ui/settings/ai/AiSettingsScreen.kt`. |
+
+---
+
+## Follow-up: "AI food" search filter (2026-08-13)
+
+A dedicated **AI food** chip in the food search filter row, so AI-created products can be
+filtered on their own rather than only appearing folded into *Your food*. Uses the
+`FoodSource.Type.Ai` tag this feature introduced.
+
+See [`ai-food-search-filter.md`](./ai-food-search-filter.md).

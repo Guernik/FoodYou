@@ -337,6 +337,7 @@
     <string name="description_preview_release">You are currently using a preview version. It may be incomplete, unstable, or subject to change.</string>
 
     <string name="headline_your_food">Your food</string>
+    <string name="headline_ai_food">AI food</string>
 
     <string name="headline_filters">Filters</string>
 

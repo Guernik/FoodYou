@@ -43,6 +43,7 @@ class FoodSearchAppState(
 class ListStates(
     val recent: LazyListState,
     val yourFood: LazyListState,
+    val ai: LazyListState,
     val openFoodFacts: LazyListState,
     val usda: LazyListState,
     val swiss: LazyListState,
@@ -52,14 +53,16 @@ class ListStates(
 private fun rememberListStates(): ListStates {
     val recent = rememberLazyListState()
     val yourFood = rememberLazyListState()
+    val ai = rememberLazyListState()
     val openFoodFacts = rememberLazyListState()
     val usda = rememberLazyListState()
     val swiss = rememberLazyListState()
 
-    return remember(recent, yourFood, openFoodFacts, usda, swiss) {
+    return remember(recent, yourFood, ai, openFoodFacts, usda, swiss) {
         ListStates(
             recent = recent,
             yourFood = yourFood,
+            ai = ai,
             openFoodFacts = openFoodFacts,
             usda = usda,
             swiss = swiss,

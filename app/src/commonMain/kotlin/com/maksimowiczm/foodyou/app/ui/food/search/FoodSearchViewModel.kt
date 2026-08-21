@@ -97,6 +97,17 @@ internal class FoodSearchViewModel(
             )
         }
 
+    private val aiPages = observeFoodPages(FoodSource.Type.Ai).cachedIn(viewModelScope)
+    private val aiState =
+        observeFoodCount(FoodSource.Type.Ai).map { count ->
+            FoodSourceUiState(
+                remoteEnabled = RemoteStatus.LocalOnly,
+                pages = aiPages,
+                count = count,
+                alwaysShowFilter = true,
+            )
+        }
+
     private val openFoodFactsPages =
         observeFoodPages(FoodSource.Type.OpenFoodFacts).cachedIn(viewModelScope)
     private val openFoodFactsState =
@@ -153,32 +164,37 @@ internal class FoodSearchViewModel(
                 initialValue = emptyList(),
             )
 
-    val uiState =
+    // Combined separately because `combine` tops out at 7 typed arguments and the sources alone
+    // already use 6.
+    private val sourceStates =
         combine(
-                recentFoodState,
-                yourFoodState,
-                openFoodFactsState,
-                usdaState,
-                swissState,
-                filter,
-                searchHistory,
-            ) {
-                recentFoodState,
-                yourFoodState,
-                openFoodFactsState,
-                usdaState,
-                swissState,
-                filter,
-                searchHistory ->
+            recentFoodState,
+            yourFoodState,
+            aiState,
+            openFoodFactsState,
+            usdaState,
+            swissState,
+        ) {
+            recentFoodState,
+            yourFoodState,
+            aiState,
+            openFoodFactsState,
+            usdaState,
+            swissState ->
+            mapOf(
+                FoodFilter.Source.Recent to recentFoodState,
+                FoodFilter.Source.YourFood to yourFoodState,
+                FoodFilter.Source.Ai to aiState,
+                FoodFilter.Source.OpenFoodFacts to openFoodFactsState,
+                FoodFilter.Source.USDA to usdaState,
+                FoodFilter.Source.SwissFoodCompositionDatabase to swissState,
+            )
+        }
+
+    val uiState =
+        combine(sourceStates, filter, searchHistory) { sourceStates, filter, searchHistory ->
                 FoodSearchUiState(
-                    sources =
-                        mapOf(
-                            FoodFilter.Source.Recent to recentFoodState,
-                            FoodFilter.Source.YourFood to yourFoodState,
-                            FoodFilter.Source.OpenFoodFacts to openFoodFactsState,
-                            FoodFilter.Source.USDA to usdaState,
-                            FoodFilter.Source.SwissFoodCompositionDatabase to swissState,
-                        ),
+                    sources = sourceStates,
                     filter = filter,
                     recentSearches = searchHistory.map { it.query },
                 )
