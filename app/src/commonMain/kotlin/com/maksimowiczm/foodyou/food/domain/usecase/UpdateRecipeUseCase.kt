@@ -79,27 +79,25 @@ class UpdateRecipeUseCase(
         }
 
         return transactionProvider.withTransaction {
-            val ingredients =
-                ingredients.map { (foodId, measurement) ->
-                    val food =
-                        when (foodId) {
-                            is FoodId.Product ->
-                                productRepository.observeProduct(foodId).firstOrNull()
+            val ingredients = ingredients.map { (foodId, measurement) ->
+                val food =
+                    when (foodId) {
+                        is FoodId.Product -> productRepository.observeProduct(foodId).firstOrNull()
 
-                            is FoodId.Recipe -> recipeRepository.observeRecipe(foodId).firstOrNull()
-                        }
-
-                    if (food == null) {
-                        return@withTransaction logger.logAndReturnFailure(
-                            tag = TAG,
-                            throwable = null,
-                            error = UpdateRecipeError.IngredientNotFound(foodId),
-                            message = { "Ingredient with ID $foodId not found." },
-                        )
+                        is FoodId.Recipe -> recipeRepository.observeRecipe(foodId).firstOrNull()
                     }
 
-                    RecipeIngredient(food, measurement)
+                if (food == null) {
+                    return@withTransaction logger.logAndReturnFailure(
+                        tag = TAG,
+                        throwable = null,
+                        error = UpdateRecipeError.IngredientNotFound(foodId),
+                        message = { "Ingredient with ID $foodId not found." },
+                    )
                 }
+
+                RecipeIngredient(food, measurement)
+            }
 
             val updatedRecipe =
                 recipe.copy(

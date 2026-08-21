@@ -224,7 +224,8 @@ private fun DragHandle(modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Default.DragHandle,
             contentDescription = null,
-            modifier = Modifier.clickable(onClick = {}, indication = null, interactionSource = null),
+            modifier =
+                Modifier.clickable(onClick = {}, indication = null, interactionSource = null),
         )
     }
 }

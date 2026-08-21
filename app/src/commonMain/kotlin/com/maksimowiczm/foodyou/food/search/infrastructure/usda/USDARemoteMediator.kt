@@ -105,9 +105,9 @@ internal class USDARemoteMediator<K : Any, T : Any>(
         }
     }
 
-    private fun SearchResultFood.toDomainProduct(): Product? =
-        runCatching { this.let(productMapper::toRemoteProduct).let(remoteMapper::toModel) }
-            .getOrNull()
+    private fun SearchResultFood.toDomainProduct(): Product? = runCatching {
+        this.let(productMapper::toRemoteProduct).let(remoteMapper::toModel)
+    }.getOrNull()
 
     private suspend fun Product.insert(now: Instant = dateProvider.nowInstant()) {
         val id =

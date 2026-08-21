@@ -31,8 +31,8 @@ sealed interface AiFoodLoggingUiState {
 
 /**
  * The AI-populated per-100g nutrition fields, editable by the user. All values are per 100g/100ml.
- * The other 34 [com.maksimowiczm.foodyou.common.domain.food.NutritionFacts] fields are left at their
- * incomplete defaults.
+ * The other 34 [com.maksimowiczm.foodyou.common.domain.food.NutritionFacts] fields are left at
+ * their incomplete defaults.
  */
 @Immutable
 data class EditableNutrition(

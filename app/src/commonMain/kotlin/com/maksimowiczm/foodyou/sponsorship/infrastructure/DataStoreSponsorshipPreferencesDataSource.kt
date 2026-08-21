@@ -12,7 +12,8 @@ internal class DataStoreSponsorshipPreferencesDataSource(dataStore: DataStore<Pr
     override fun Preferences.toUserPreferences(): SponsorshipPreferences =
         SponsorshipPreferences(
             remoteAllowed = this[SponsorshipPreferencesKeys.allowRemoteSponsorships] ?: false,
-            shouldCleanLegacyEntities = this[SponsorshipPreferencesKeys.cleanLegacyEntities] ?: true,
+            shouldCleanLegacyEntities =
+                this[SponsorshipPreferencesKeys.cleanLegacyEntities] ?: true,
         )
 
     override fun MutablePreferences.applyUserPreferences(updated: SponsorshipPreferences) {

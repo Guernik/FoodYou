@@ -40,10 +40,14 @@ class SaveMealItemsAsRecipeUseCase(
         val ingredients = mutableListOf<Pair<FoodId, Measurement>>()
         for (item in items) {
             val productId =
-                saveMealItemAsProductUseCase.save(item).fold(
-                    onSuccess = { it },
-                    onError = { return Err(SaveRecipeError.ProductCreationFailed) },
-                )
+                saveMealItemAsProductUseCase
+                    .save(item)
+                    .fold(
+                        onSuccess = { it },
+                        onError = {
+                            return Err(SaveRecipeError.ProductCreationFailed)
+                        },
+                    )
             ingredients += productId to Measurement.Gram(item.estimatedGrams)
         }
 

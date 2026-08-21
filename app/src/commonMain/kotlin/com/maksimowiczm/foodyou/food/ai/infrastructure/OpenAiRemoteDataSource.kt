@@ -78,9 +78,9 @@ internal class OpenAiRemoteDataSource(private val client: HttpClient, private va
     }
 
     /**
-     * Lightweight connectivity/auth check. Sends a minimal chat request (no structured output) so it
-     * is cheap and does not depend on the model supporting json_schema. Success = HTTP 200 with a
-     * well-formed chat response.
+     * Lightweight connectivity/auth check. Sends a minimal chat request (no structured output) so
+     * it is cheap and does not depend on the model supporting json_schema. Success = HTTP 200 with
+     * a well-formed chat response.
      */
     suspend fun testConnection(baseUrl: String, model: String, apiKey: String): Result<Unit> {
         return try {
@@ -110,8 +110,7 @@ internal class OpenAiRemoteDataSource(private val client: HttpClient, private va
                 HttpStatusCode.Unauthorized,
                 HttpStatusCode.Forbidden -> Result.failure(AiRemoteException.Unauthorized())
 
-                HttpStatusCode.TooManyRequests ->
-                    Result.failure(AiRemoteException.RateLimited())
+                HttpStatusCode.TooManyRequests -> Result.failure(AiRemoteException.RateLimited())
 
                 else -> {
                     val message = response.errorMessage()

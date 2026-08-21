@@ -104,94 +104,91 @@ internal class RoomFoodDiaryEntryRepository(
         date: LocalDate,
         food: DiaryFood,
         createdAt: LocalDateTime,
-    ): FoodDiaryEntryId =
-        database.immediateTransaction {
-            val recipeId = run {
-                if (food is DiaryFoodRecipe) {
-                    insertRecipe(food)
-                } else {
-                    null
-                }
+    ): FoodDiaryEntryId = database.immediateTransaction {
+        val recipeId = run {
+            if (food is DiaryFoodRecipe) {
+                insertRecipe(food)
+            } else {
+                null
             }
-
-            val productId = run {
-                if (food is DiaryFoodProduct) {
-                    insertProduct(food)
-                } else {
-                    null
-                }
-            }
-
-            if (recipeId == null && productId == null) {
-                error("Diary entry must have either a product or a recipe")
-            }
-
-            val createdAt = createdAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds
-
-            val entity =
-                MeasurementEntity(
-                    mealId = mealId,
-                    epochDay = date.toEpochDays(),
-                    productId = productId,
-                    recipeId = recipeId,
-                    measurement = measurement.type,
-                    quantity = measurement.rawValue,
-                    createdAt = createdAt,
-                    updatedAt = createdAt,
-                )
-
-            dao.insertMeasurement(entity).toFoodDiaryEntryId()
         }
 
-    override suspend fun update(entry: FoodDiaryEntry) =
-        database.immediateTransaction {
-            val entity = dao.observeMeasurementById(entry.id.value).firstOrNull()
-
-            if (entity == null) {
-                error("Measurement with id ${entry.id} not found")
+        val productId = run {
+            if (food is DiaryFoodProduct) {
+                insertProduct(food)
+            } else {
+                null
             }
-
-            // Delete the existing product or recipe if it exists
-            val productId = entity.productId
-            val recipeId = entity.recipeId
-            if (productId != null) {
-                deleteProduct(productId)
-            } else if (recipeId != null) {
-                deleteRecipe(recipeId)
-            }
-
-            // Insert the new product or recipe
-            val newProductId = run {
-                when (val food = entry.food) {
-                    is DiaryFoodProduct -> insertProduct(food)
-                    else -> null
-                }
-            }
-            val newRecipeId = run {
-                when (val food = entry.food) {
-                    is DiaryFoodRecipe -> insertRecipe(food)
-                    else -> null
-                }
-            }
-
-            if (newProductId == null && newRecipeId == null) {
-                error("Diary entry must have either a product or a recipe")
-            }
-
-            val updatedEntity =
-                entity.copy(
-                    mealId = entry.mealId,
-                    epochDay = entry.date.toEpochDays(),
-                    productId = newProductId,
-                    recipeId = newRecipeId,
-                    measurement = entry.measurement.type,
-                    quantity = entry.measurement.rawValue,
-                    updatedAt =
-                        entry.updatedAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds,
-                )
-
-            dao.updateMeasurement(updatedEntity)
         }
+
+        if (recipeId == null && productId == null) {
+            error("Diary entry must have either a product or a recipe")
+        }
+
+        val createdAt = createdAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds
+
+        val entity =
+            MeasurementEntity(
+                mealId = mealId,
+                epochDay = date.toEpochDays(),
+                productId = productId,
+                recipeId = recipeId,
+                measurement = measurement.type,
+                quantity = measurement.rawValue,
+                createdAt = createdAt,
+                updatedAt = createdAt,
+            )
+
+        dao.insertMeasurement(entity).toFoodDiaryEntryId()
+    }
+
+    override suspend fun update(entry: FoodDiaryEntry) = database.immediateTransaction {
+        val entity = dao.observeMeasurementById(entry.id.value).firstOrNull()
+
+        if (entity == null) {
+            error("Measurement with id ${entry.id} not found")
+        }
+
+        // Delete the existing product or recipe if it exists
+        val productId = entity.productId
+        val recipeId = entity.recipeId
+        if (productId != null) {
+            deleteProduct(productId)
+        } else if (recipeId != null) {
+            deleteRecipe(recipeId)
+        }
+
+        // Insert the new product or recipe
+        val newProductId = run {
+            when (val food = entry.food) {
+                is DiaryFoodProduct -> insertProduct(food)
+                else -> null
+            }
+        }
+        val newRecipeId = run {
+            when (val food = entry.food) {
+                is DiaryFoodRecipe -> insertRecipe(food)
+                else -> null
+            }
+        }
+
+        if (newProductId == null && newRecipeId == null) {
+            error("Diary entry must have either a product or a recipe")
+        }
+
+        val updatedEntity =
+            entity.copy(
+                mealId = entry.mealId,
+                epochDay = entry.date.toEpochDays(),
+                productId = newProductId,
+                recipeId = newRecipeId,
+                measurement = entry.measurement.type,
+                quantity = entry.measurement.rawValue,
+                updatedAt = entry.updatedAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds,
+            )
+
+        dao.updateMeasurement(updatedEntity)
+    }
 
     override suspend fun delete(id: FoodDiaryEntryId) = dao.deleteMeasurement(id.value)
 

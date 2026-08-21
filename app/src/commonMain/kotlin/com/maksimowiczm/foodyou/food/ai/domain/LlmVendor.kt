@@ -1,8 +1,8 @@
 package com.maksimowiczm.foodyou.food.ai.domain
 
 /**
- * A preset for a known OpenAI-compatible provider. Purely a UI convenience for the settings
- * screen — only [LlmSettings.baseUrl] and [LlmSettings.model] are persisted, never the vendor.
+ * A preset for a known OpenAI-compatible provider. Purely a UI convenience for the settings screen
+ * — only [LlmSettings.baseUrl] and [LlmSettings.model] are persisted, never the vendor.
  *
  * [models] are curated static defaults; the settings screen always allows a manual model override
  * for anything not in the list. [Custom] carries no preset and is selected when the persisted base

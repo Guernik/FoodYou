@@ -64,10 +64,9 @@ internal class FoodSearchViewModel(
                 initialValue = runBlocking { foodSearchPreferencesRepository.observe().first() },
             )
 
-    private val recentFoodPages =
-        searchQuery.flatMapLatest { query ->
-            foodSearchUseCase.searchRecent(query, excludedRecipeId).cachedIn(viewModelScope)
-        }
+    private val recentFoodPages = searchQuery.flatMapLatest { query ->
+        foodSearchUseCase.searchRecent(query, excludedRecipeId).cachedIn(viewModelScope)
+    }
     private val recentFoodState =
         searchQuery
             .flatMapLatest { query ->
@@ -140,19 +139,17 @@ internal class FoodSearchViewModel(
             )
         }
 
-    private fun observeFoodCount(source: FoodSource.Type) =
-        searchQuery.flatMapLatest { query ->
-            foodSearchRepository.searchFoodCount(
-                query = searchQuery(query),
-                source = source,
-                excludedRecipeId = excludedRecipeId,
-            )
-        }
+    private fun observeFoodCount(source: FoodSource.Type) = searchQuery.flatMapLatest { query ->
+        foodSearchRepository.searchFoodCount(
+            query = searchQuery(query),
+            source = source,
+            excludedRecipeId = excludedRecipeId,
+        )
+    }
 
-    private fun observeFoodPages(source: FoodSource.Type) =
-        searchQuery.flatMapLatest { query ->
-            foodSearchUseCase.search(query, source, excludedRecipeId)
-        }
+    private fun observeFoodPages(source: FoodSource.Type) = searchQuery.flatMapLatest { query ->
+        foodSearchUseCase.search(query, source, excludedRecipeId)
+    }
 
     private val searchHistory =
         searchHistoryRepository
@@ -174,13 +171,7 @@ internal class FoodSearchViewModel(
             openFoodFactsState,
             usdaState,
             swissState,
-        ) {
-            recentFoodState,
-            yourFoodState,
-            aiState,
-            openFoodFactsState,
-            usdaState,
-            swissState ->
+        ) { recentFoodState, yourFoodState, aiState, openFoodFactsState, usdaState, swissState ->
             mapOf(
                 FoodFilter.Source.Recent to recentFoodState,
                 FoodFilter.Source.YourFood to yourFoodState,

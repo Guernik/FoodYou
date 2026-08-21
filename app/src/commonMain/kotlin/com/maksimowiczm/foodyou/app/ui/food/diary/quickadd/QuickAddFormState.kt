@@ -114,23 +114,23 @@ internal fun rememberQuickAddFormState(
         energyFormatter,
     ) {
         snapshotFlow {
-                if (!autoCalculateEnergyState.value) {
-                    return@snapshotFlow null
-                }
-
-                val proteinsValue = proteinsForm.value ?: 0.0
-                val carbohydratesValue = carbohydratesForm.value ?: 0.0
-                val fatsValue = fatsForm.value ?: 0.0
-
-                val kcal =
-                    NutrientsHelper.calculateEnergy(
-                        proteins = proteinsValue,
-                        carbohydrates = carbohydratesValue,
-                        fats = fatsValue,
-                    )
-
-                energyFormatter.fromKcal(kcal).formatClipZeros()
+            if (!autoCalculateEnergyState.value) {
+                return@snapshotFlow null
             }
+
+            val proteinsValue = proteinsForm.value ?: 0.0
+            val carbohydratesValue = carbohydratesForm.value ?: 0.0
+            val fatsValue = fatsForm.value ?: 0.0
+
+            val kcal =
+                NutrientsHelper.calculateEnergy(
+                    proteins = proteinsValue,
+                    carbohydrates = carbohydratesValue,
+                    fats = fatsValue,
+                )
+
+            energyFormatter.fromKcal(kcal).formatClipZeros()
+        }
             .filterNotNull()
             .collectLatest { energyForm.textFieldState.setTextAndPlaceCursorAtEnd(it) }
     }

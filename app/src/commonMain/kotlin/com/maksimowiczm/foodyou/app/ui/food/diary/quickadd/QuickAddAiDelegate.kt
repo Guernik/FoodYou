@@ -112,13 +112,12 @@ internal class QuickAddAiDelegate(
         val toPer100g = 100.0 / grams
 
         val facts =
-            (item?.nutritionFactsPer100g?.let { it * (grams / 100.0) } ?: NutritionFacts())
-                .copy(
-                    energy = energyKcal.toNutrientValue(),
-                    proteins = proteins.toNutrientValue(),
-                    carbohydrates = carbohydrates.toNutrientValue(),
-                    fats = fats.toNutrientValue(),
-                ) * toPer100g
+            (item?.nutritionFactsPer100g?.let { it * (grams / 100.0) } ?: NutritionFacts()).copy(
+                energy = energyKcal.toNutrientValue(),
+                proteins = proteins.toNutrientValue(),
+                carbohydrates = carbohydrates.toNutrientValue(),
+                fats = fats.toNutrientValue(),
+            ) * toPer100g
 
         val product =
             MealItem(

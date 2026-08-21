@@ -35,12 +35,11 @@ internal class SponsorViewModel(
 
     private val yearMonth = MutableStateFlow(LocalDate.now().yearMonth)
 
-    private val messages =
-        yearMonth.flatMapLatest { yearMonth ->
-            sponsorRepository.observeByYearMonth(yearMonth).map { list ->
-                list.map { it.toUiModel() }
-            }
+    private val messages = yearMonth.flatMapLatest { yearMonth ->
+        sponsorRepository.observeByYearMonth(yearMonth).map { list ->
+            list.map { it.toUiModel() }
         }
+    }
 
     private val goals = observeGoals()
 
@@ -55,15 +54,14 @@ internal class SponsorViewModel(
                 ordering,
                 goals ->
                 val totalAmount = messages.sumOf { it.inEuro.toDouble() }
-                val goals =
-                    goals.map {
-                        GoalUiModel(
-                            amount = it.amount,
-                            title = it.title,
-                            description = it.description,
-                            fulfilled = totalAmount >= it.amount,
-                        )
-                    }
+                val goals = goals.map {
+                    GoalUiModel(
+                        amount = it.amount,
+                        title = it.title,
+                        description = it.description,
+                        fulfilled = totalAmount >= it.amount,
+                    )
+                }
                 val nextGoal = goals.firstOrNull { !it.fulfilled }
                 val remainingForNextGoal = nextGoal?.let { (it.amount - totalAmount) }
 

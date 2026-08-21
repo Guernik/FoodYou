@@ -188,19 +188,18 @@ internal class AiFoodLoggingViewModel(
         }
     }
 
-    private fun List<MealItem>.toEditable(): List<EditableMealItem> =
-        mapIndexed { index, item ->
-            EditableMealItem(
-                id = index.toLong(),
-                name = item.name,
-                grams = item.estimatedGrams,
-                isLiquid = item.isLiquid,
-                nutrition = item.nutritionFactsPer100g.toEditable(),
-                expanded = false,
-                savedProductId = null,
-                item = item,
-            )
-        }
+    private fun List<MealItem>.toEditable(): List<EditableMealItem> = mapIndexed { index, item ->
+        EditableMealItem(
+            id = index.toLong(),
+            name = item.name,
+            grams = item.estimatedGrams,
+            isLiquid = item.isLiquid,
+            nutrition = item.nutritionFactsPer100g.toEditable(),
+            expanded = false,
+            savedProductId = null,
+            item = item,
+        )
+    }
 
     private fun NutritionFacts.toEditable(): EditableNutrition =
         EditableNutrition(

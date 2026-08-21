@@ -31,24 +31,23 @@ internal class RoomRecipeRepository(
                     return@combine null
                 }
 
-                val ingredients =
-                    ingredients.map {
-                        val foodId = it.foodId
+                val ingredients = ingredients.map {
+                    val foodId = it.foodId
 
-                        val foodFlow =
-                            when (foodId) {
-                                is FoodId.Recipe -> observeRecipe(foodId).filterNotNull()
-                                is FoodId.Product ->
-                                    productDataSource.observeProduct(foodId).filterNotNull()
-                            }
-
-                        foodFlow.map { food ->
-                            RecipeIngredient(
-                                food = food,
-                                measurement = Measurement.from(it.measurement, it.quantity),
-                            )
+                    val foodFlow =
+                        when (foodId) {
+                            is FoodId.Recipe -> observeRecipe(foodId).filterNotNull()
+                            is FoodId.Product ->
+                                productDataSource.observeProduct(foodId).filterNotNull()
                         }
+
+                    foodFlow.map { food ->
+                        RecipeIngredient(
+                            food = food,
+                            measurement = Measurement.from(it.measurement, it.quantity),
+                        )
                     }
+                }
 
                 recipeEntity to combine(ingredients) { it.toList() }
             }

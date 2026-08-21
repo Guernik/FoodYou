@@ -131,7 +131,9 @@ private fun ChangelogItem(
     Card(
         modifier = modifier,
         colors =
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

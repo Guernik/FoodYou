@@ -61,8 +61,9 @@ internal class OpenAiMealDescriptionParser(
     /**
      * Collapses several [MealItem]s into one combined product: grams are summed, and each per-100g
      * nutrient becomes the weight-weighted average across the total grams so it stays a realistic
-     * per-100g figure for the finished dish (rather than the sum of the components' per-100g values).
-     * A null nutrient contributes nothing; the merged field is null only if every item was null.
+     * per-100g figure for the finished dish (rather than the sum of the components' per-100g
+     * values). A null nutrient contributes nothing; the merged field is null only if every item was
+     * null.
      */
     private fun List<MealItem>.merged(): MealItem {
         val totalGrams = sumOf { it.estimatedGrams }.takeIf { it > 0.0 } ?: 1.0

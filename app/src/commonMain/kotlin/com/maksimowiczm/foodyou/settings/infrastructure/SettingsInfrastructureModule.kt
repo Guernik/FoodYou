@@ -9,10 +9,10 @@ import org.koin.dsl.bind
 internal fun Module.settingsInfrastructureModule() {
     userPreferencesRepositoryOf(::DataStoreSettingsRepository)
     factory {
-            TranslationRepositoryImpl(
-                systemDetails = get(),
-                settingsRepository = userPreferencesRepository(),
-            )
-        }
+        TranslationRepositoryImpl(
+            systemDetails = get(),
+            settingsRepository = userPreferencesRepository(),
+        )
+    }
         .bind<TranslationRepository>()
 }

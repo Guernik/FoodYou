@@ -53,14 +53,14 @@ internal class ExportProductsViewModel(
 
     private suspend fun handleWriter(writer: BufferedWriter) {
         flow {
-                val lines = exportCsvProductsUseCase.export(ProductField.entries)
-                var count = 0
-                lines.collect { line ->
-                    writer.appendLine(line)
-                    emit(count++)
-                }
-                writer.flush()
+            val lines = exportCsvProductsUseCase.export(ProductField.entries)
+            var count = 0
+            lines.collect { line ->
+                writer.appendLine(line)
+                emit(count++)
             }
+            writer.flush()
+        }
             .catch { throw it }
             .conflate()
             .onEach { _uiState.value = UiState.Exporting(it) }

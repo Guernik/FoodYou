@@ -212,7 +212,10 @@ internal fun RecipeApp(
                     onSave = { measurement ->
                         state.updateIngredient(
                             route.index,
-                            MinimalIngredient(foodId = ingredient.foodId, measurement = measurement),
+                            MinimalIngredient(
+                                foodId = ingredient.foodId,
+                                measurement = measurement,
+                            ),
                         )
                         navController.popBackStack<EditIngredient>(true)
                     },

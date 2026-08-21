@@ -76,8 +76,9 @@ fun AiFoodLoggingScreen(
     modifier: Modifier = Modifier,
 ) {
     val dateFormatter = LocalDateFormatter.current
-    val viewModel: AiFoodLoggingViewModel =
-        koinViewModel { parametersOf(mealId, date.toEpochDays().toLong()) }
+    val viewModel: AiFoodLoggingViewModel = koinViewModel {
+        parametersOf(mealId, date.toEpochDays().toLong())
+    }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -238,8 +239,7 @@ private fun SingleProductToggle(
             IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
-                    contentDescription =
-                        stringResource(Res.string.description_ai_single_product),
+                    contentDescription = stringResource(Res.string.description_ai_single_product),
                 )
             }
         }
@@ -397,7 +397,10 @@ private fun ReviewItemCard(
                     label = { Text(stringResource(Res.string.product_name)) },
                 )
                 IconButton(onClick = onRemove) {
-                    Icon(Icons.Filled.Delete, contentDescription = stringResource(Res.string.action_delete))
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = stringResource(Res.string.action_delete),
+                    )
                 }
             }
 
@@ -413,7 +416,10 @@ private fun ReviewItemCard(
                     lineLimits = TextFieldLineLimits.SingleLine,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Switch(checked = item.isLiquid, onCheckedChange = { checked -> onEdit { copy(isLiquid = checked) } })
+                    Switch(
+                        checked = item.isLiquid,
+                        onCheckedChange = { checked -> onEdit { copy(isLiquid = checked) } },
+                    )
                     Text(
                         text = stringResource(Res.string.action_treat_as_liquid),
                         style = MaterialTheme.typography.labelMedium,
@@ -435,7 +441,8 @@ private fun ReviewItemCard(
             // Collapsible per-100g macro editor.
             TextButton(onClick = onToggleExpand) {
                 Icon(
-                    imageVector = if (item.expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    imageVector =
+                        if (item.expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = null,
                 )
                 Text(
@@ -532,8 +539,7 @@ private fun SaveRecipeDialog(
     onConfirm: (String) -> Unit,
 ) {
     // Collapse whitespace/newlines from the meal description and cap to a sane length.
-    val initial =
-        suggestedName.replace(Regex("\\s+"), " ").trim().take(MAX_RECIPE_NAME_LENGTH)
+    val initial = suggestedName.replace(Regex("\\s+"), " ").trim().take(MAX_RECIPE_NAME_LENGTH)
     val nameState =
         rememberTextFieldState(
             initialText = initial,

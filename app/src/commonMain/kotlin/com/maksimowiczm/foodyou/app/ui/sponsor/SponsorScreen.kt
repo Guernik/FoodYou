@@ -181,7 +181,8 @@ private fun SponsorPrivacyScreen(
                     ) {
                         Text(
                             text = stringResource(Res.string.action_allow),
-                            style = ButtonDefaults.textStyleFor(ButtonDefaults.LargeContainerHeight),
+                            style =
+                                ButtonDefaults.textStyleFor(ButtonDefaults.LargeContainerHeight),
                         )
                     }
                 }
@@ -207,8 +208,9 @@ private fun SponsorScreen(
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val scrolledOffset = rememberSaveable { mutableFloatStateOf(0f) }
-    val nestedScrollConnection =
-        StatusBarProtectionDefaults.scrollConnection { scrolledOffset.value -= it.y }
+    val nestedScrollConnection = StatusBarProtectionDefaults.scrollConnection {
+        scrolledOffset.value -= it.y
+    }
 
     Scaffold(
         modifier = modifier,
@@ -336,7 +338,8 @@ private fun TopBar(
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Refresh,
-                                    contentDescription = stringResource(Res.string.action_try_again),
+                                    contentDescription =
+                                        stringResource(Res.string.action_try_again),
                                 )
                             }
                         },

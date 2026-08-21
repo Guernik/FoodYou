@@ -23,7 +23,12 @@ internal fun Module.aiModule() {
                 // encodeDefaults is required: the OpenAI request body relies on default values
                 // (response_format.type = "json_schema", strict = true). Without it kotlinx
                 // omits them and the API rejects the request with "Missing required parameter".
-                json(Json { ignoreUnknownKeys = true; encodeDefaults = true })
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        encodeDefaults = true
+                    }
+                )
             }
         }
     }

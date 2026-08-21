@@ -75,9 +75,9 @@ private fun Preferences.getHomeCardOrder(key: Preferences.Key<String>): List<Hom
 private fun MutablePreferences.setEnergyFormat(key: Preferences.Key<Int>, value: EnergyFormat) =
     setWithNull(key, value.ordinal)
 
-private fun Preferences.getEnergyFormat(key: Preferences.Key<Int>): EnergyFormat =
-    runCatching { EnergyFormat.entries[this[key] ?: EnergyFormat.DEFAULT.ordinal] }
-        .getOrElse { EnergyFormat.DEFAULT }
+private fun Preferences.getEnergyFormat(key: Preferences.Key<Int>): EnergyFormat = runCatching {
+    EnergyFormat.entries[this[key] ?: EnergyFormat.DEFAULT.ordinal]
+}.getOrElse { EnergyFormat.DEFAULT }
 
 private fun Preferences.getAppLaunchInfo(): AppLaunchInfo =
     AppLaunchInfo(

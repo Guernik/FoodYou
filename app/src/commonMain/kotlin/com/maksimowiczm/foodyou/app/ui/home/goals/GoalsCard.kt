@@ -303,7 +303,10 @@ private fun MacroBar(
             drawRect(
                 color = containerColor,
                 size =
-                    Size(width = size.width, height = size.height * containerFraction - 1.dp.toPx()),
+                    Size(
+                        width = size.width,
+                        height = size.height * containerFraction - 1.dp.toPx(),
+                    ),
             )
             drawRect(
                 color = barColor,

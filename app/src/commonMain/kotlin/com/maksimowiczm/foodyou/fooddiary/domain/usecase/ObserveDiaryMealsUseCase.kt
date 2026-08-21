@@ -44,15 +44,14 @@ class ObserveDiaryMealsUseCase(
                 }
             }
             .flatMapLatest { meals ->
-                val diaryEntries =
-                    meals.map { meal ->
-                        combine(
-                            manualEntryRepository.observeAll(mealId = meal.id, date = date),
-                            foodEntryRepository.observeAll(mealId = meal.id, date = date),
-                        ) { manualEntries, foodEntries ->
-                            (manualEntries + foodEntries).sortedBy { it.name }
-                        }
+                val diaryEntries = meals.map { meal ->
+                    combine(
+                        manualEntryRepository.observeAll(mealId = meal.id, date = date),
+                        foodEntryRepository.observeAll(mealId = meal.id, date = date),
+                    ) { manualEntries, foodEntries ->
+                        (manualEntries + foodEntries).sortedBy { it.name }
                     }
+                }
 
                 combine(diaryEntries) { entries ->
                     entries.zip(meals) { entries, meal ->
